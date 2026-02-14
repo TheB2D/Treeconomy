@@ -338,7 +338,7 @@ export function SceneTwo({}: SceneTwoProps) {
                   className="w-full"
                 >
                   <span className="inline-flex items-center gap-2">
-                    <img src="/icons/up.png" alt="Up arrow" className="w-4 h-4 object-contain" />
+                    <img src="/ui_helper/UI_Flat_IconArrow01a.png" alt="Primary action" className="w-4 h-4 object-contain" />
                     SHOW GREEN ALTERNATIVES
                   </span>
                 </Button>
@@ -349,7 +349,7 @@ export function SceneTwo({}: SceneTwoProps) {
                   className="w-full"
                 >
                   <span className="inline-flex items-center gap-2">
-                    <img src="/icons/down.png" alt="Down arrow" className="w-4 h-4 object-contain" />
+                    <img src="/ui_helper/UI_Flat_IconArrow01c.png" alt="Secondary action" className="w-4 h-4 object-contain" />
                     EXPLAIN MY OPTIONS
                   </span>
                 </Button>

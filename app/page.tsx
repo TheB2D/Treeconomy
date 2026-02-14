@@ -136,7 +136,7 @@ export default function Home() {
                 }}
               >
                 NATURE&apos;S THOUGHT
-                <img src="/icons/comment.png" alt="Nature thoughts" className="w-4 h-4 object-contain" />
+                <img src="/ui_helper/UI_Flat_ButtonArrow01a.png" alt="Nature thoughts" className="w-4 h-4 object-contain" />
               </Button>
             </div>
           )}
@@ -177,7 +177,7 @@ export default function Home() {
             }}
           >
             SKILL TREE
-            <img src="/icons/comment.png" alt="Skill tree" className="w-4 h-4 object-contain" />
+            <img src="/ui_helper/UI_Flat_ButtonArrow01a.png" alt="Skill tree" className="w-4 h-4 object-contain" />
           </Button>
         </div>
       )}
@@ -206,7 +206,7 @@ export default function Home() {
             }}
           >
             LEADERBOARDS
-            <img src="/icons/trophy.png" alt="Leaderboards" className="w-4 h-4 object-contain" />
+            <img src="/ui_helper/UI_Flat_IconPlay01a.png" alt="Leaderboards" className="w-4 h-4 object-contain" />
           </Button>
         </div>
       )}
@@ -235,7 +235,7 @@ export default function Home() {
             }}
           >
             NATURE&apos;S THOUGHT
-            <img src="/icons/comment.png" alt="Nature thoughts" className="w-4 h-4 object-contain" />
+            <img src="/ui_helper/UI_Flat_ButtonArrow01a.png" alt="Nature thoughts" className="w-4 h-4 object-contain" />
           </Button>
         </div>
       )}
@@ -265,7 +265,7 @@ export default function Home() {
           className="px-3 py-2"
         >
           <img
-            src={isGuideOpen ? "/icons/cross.png" : "/icons/comment.png"}
+            src={isGuideOpen ? "/ui_helper/UI_Flat_ToggleRightOn01a.png" : "/ui_helper/UI_Flat_ToggleRightOff01a.png"}
             alt={isGuideOpen ? "Close guide" : "Open guide"}
             className="w-4 h-4 object-contain"
           />

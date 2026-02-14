@@ -429,10 +429,20 @@ export function SkillTree({
             {targetScore && <div className="bg-card border-2 border-accent px-3 py-2">TARGET {targetScore}</div>}
             {maxLevel && <div className="bg-card border-2 border-primary px-3 py-2">MAX {maxLevel}</div>}
             <div className="bg-card border-2 border-border px-3 py-2">ZOOM {(zoom * 100).toFixed(0)}%</div>
-            <Button size="sm" variant="secondary" onClick={() => setZoom((z) => Math.min(MAX_ZOOM, z + 0.1))}>+</Button>
-            <Button size="sm" variant="secondary" onClick={() => setZoom((z) => Math.max(MIN_ZOOM, z - 0.1))}>-</Button>
-            <Button size="sm" variant="outline" onClick={centerMap}>CENTER</Button>
-            <Button size="sm" variant="destructive" onClick={handleReset}>RESET</Button>
+            <Button size="sm" variant="secondary" onClick={() => setZoom((z) => Math.min(MAX_ZOOM, z + 0.1))}>
+              <img src="/ui_helper/UI_Flat_ButtonPlus01a.png" alt="Zoom in" className="w-4 h-4 object-contain" />
+            </Button>
+            <Button size="sm" variant="secondary" onClick={() => setZoom((z) => Math.max(MIN_ZOOM, z - 0.1))}>
+              <img src="/ui_helper/UI_Flat_ButtonMinus01a.png" alt="Zoom out" className="w-4 h-4 object-contain" />
+            </Button>
+            <Button size="sm" variant="outline" onClick={centerMap}>
+              <img src="/ui_helper/UI_Flat_IconPoint01a.png" alt="Center map" className="w-4 h-4 object-contain" />
+              CENTER
+            </Button>
+            <Button size="sm" variant="destructive" onClick={handleReset}>
+              <img src="/ui_helper/UI_Flat_ButtonCross01a.png" alt="Reset tree" className="w-4 h-4 object-contain" />
+              RESET
+            </Button>
           </div>
 
           {progressionTiers.length > 0 && (

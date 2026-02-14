@@ -42,6 +42,8 @@ export function SkillNode({
   };
 
   const skillAltText = `${skill.name} icon`;
+  const hoverFrameVariant = isLocked && !isAvailable ? "4" : isLocked && isAvailable ? "2" : isMaxLevel ? "3" : "1";
+  const hoverFrameSrc = `/ui_helper/UI_Flat_Select02a_${hoverFrameVariant}.png`;
 
   return (
     <div
@@ -89,6 +91,15 @@ export function SkillNode({
           }
         )}
       >
+        {showTooltip && (
+          <img
+            src={hoverFrameSrc}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-2 w-[calc(100%-1rem)] h-[calc(100%-1rem)] object-contain pointer-events-none"
+          />
+        )}
+
         {/* Icon */}
         <div className="mb-1 drop-shadow-lg">
           {isLocked && !isAvailable ? (

@@ -9,8 +9,8 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Ranger Skill Tree - 8-Bit RPG",
-  description: "A beautiful retro-styled skill tree interface using 8bitcn-ui",
+  title: "Treeconomy",
+  description: "Treeconomy - a retro-styled gamified skill tree experience",
 };
 
 export default function RootLayout({

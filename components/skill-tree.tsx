@@ -413,6 +413,11 @@ export function SkillTree({
     <div className="w-full min-h-screen bg-transparent scanlines flex items-center justify-center p-5 relative">
       <div className="relative w-full max-w-[1700px] h-[92vh] border-4 border-border bg-card/40 pixel-border overflow-hidden">
         <div className="absolute inset-x-0 top-0 z-20 bg-card/75 backdrop-blur-[1px] border-b-4 border-border p-4">
+          <img
+            src="/Treeconomy_logo.png"
+            alt="Treeconomy"
+            className="absolute left-4 top-3 w-[180px] max-w-[35vw] h-auto object-contain opacity-95"
+          />
           <div className="text-center">
             <h1 className="text-2xl text-primary">{title}</h1>
             <p className="text-[10px] text-muted-foreground mt-1">{description}</p>

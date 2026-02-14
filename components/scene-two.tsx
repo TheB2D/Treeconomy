@@ -4,7 +4,6 @@ import { Button } from "./ui/8bit-button";
 import { useEffect, useState, useRef } from "react";
 
 interface SceneTwoProps {
-  onBack: () => void;
 }
 
 interface BankData {
@@ -14,10 +13,9 @@ interface BankData {
   fossilFuelInvestment: number;
 }
 
-export function SceneTwo({ onBack }: SceneTwoProps) {
+export function SceneTwo({}: SceneTwoProps) {
   const [fadeIn, setFadeIn] = useState(false);
   const [showUI, setShowUI] = useState(false);
-  const [isFadingOut, setIsFadingOut] = useState(false);
   const [carbonValue, setCarbonValue] = useState(0);
   const [typedMessage, setTypedMessage] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -82,13 +80,6 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleReturn = () => {
-    setIsFadingOut(true);
-    setTimeout(() => {
-      onBack();
-    }, 1000);
-  };
-
   const getFossilFuelColor = (percentage: number) => {
     if (percentage < 5) return '#48bb78';
     if (percentage < 15) return '#ecc94b';
@@ -99,7 +90,7 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
     <div 
       className="relative w-full h-screen overflow-hidden"
       style={{
-        opacity: isFadingOut ? 0 : (fadeIn ? 1 : 0),
+        opacity: fadeIn ? 1 : 0,
         transition: 'opacity 1s ease-in-out',
       }}
     >
@@ -425,20 +416,6 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                 </div>
               </div>
 
-              {/* Return Button */}
-              <div className="pt-2 pb-4">
-                <Button
-                  onClick={handleReturn}
-                  variant="outline"
-                  size="lg"
-                  className="w-full"
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <img src="/icons/cross.png" alt="Close" className="w-4 h-4 object-contain" />
-                    Return to Skill Tree
-                  </span>
-                </Button>
-              </div>
             </div>
           </div>
         </div>

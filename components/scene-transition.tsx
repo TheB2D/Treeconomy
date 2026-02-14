@@ -1,15 +1,63 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 interface SceneTransitionProps {
   isActive: boolean;
   onComplete: () => void;
 }
 
+const QUOTES = [
+  {
+    text: "The Earth does not belong to us: we belong to the Earth.",
+    author: "Marlee Matlin"
+  },
+  {
+    text: "The greatest threat to our planet is the belief that someone else will save it.",
+    author: "Robert Swan"
+  },
+  {
+    text: "We do not inherit the Earth from our ancestors; we borrow it from our children.",
+    author: "Chief Seattle"
+  },
+  {
+    text: "In nature, nothing exists alone.",
+    author: "Rachel Carson"
+  },
+  {
+    text: "The environment is where we all meet; where we all have a mutual interest; it is the one thing all of us share.",
+    author: "Lady Bird Johnson"
+  },
+  {
+    text: "We won't have a society if we destroy the environment.",
+    author: "Margaret Mead"
+  },
+  {
+    text: "What we are doing to the forests of the world is but a mirror reflection of what we are doing to ourselves.",
+    author: "Mahatma Gandhi"
+  },
+  {
+    text: "The Earth is what we all have in common.",
+    author: "Wendell Berry"
+  },
+  {
+    text: "Look deep into nature, and then you will understand everything better.",
+    author: "Albert Einstein"
+  },
+  {
+    text: "Plans to protect air and water, wilderness and wildlife are in fact plans to protect man.",
+    author: "Stewart Udall"
+  }
+];
+
 export function SceneTransition({ isActive, onComplete }: SceneTransitionProps) {
   const [phase, setPhase] = useState<'walk' | 'loading' | 'complete'>('walk');
   const [heroPosition, setHeroPosition] = useState(-5); // Start off-screen left
+  
+  // Select a random quote when the component becomes active
+  const selectedQuote = useMemo(() => {
+    return QUOTES[Math.floor(Math.random() * QUOTES.length)];
+  }, [isActive]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!isActive) return;
@@ -105,18 +153,17 @@ export function SceneTransition({ isActive, onComplete }: SceneTransitionProps) 
             pointerEvents: 'none',
           }}
         >
-          <div className="text-center" style={{ marginTop: '-20vh' }}>
+          <div className="text-center max-w-2xl px-8" style={{ marginTop: '-10vh' }}>
             <h2 
-              className="text-4xl mb-6 border-4 bg-card/90 px-8 py-4 inline-block pixel-border"
+              className="text-4xl mb-6"
               style={{
                 color: '#d1d5db',
-                borderColor: '#9ca3af',
                 textShadow: '4px 4px 0 rgba(0,0,0,1)',
               }}
             >
               LOADING NEXT SCENE
             </h2>
-            <div className="flex gap-3 justify-center mt-4">
+            <div className="flex gap-3 justify-center mb-8">
               <div 
                 className="w-4 h-4 border-2"
                 style={{ 
@@ -144,6 +191,29 @@ export function SceneTransition({ isActive, onComplete }: SceneTransitionProps) 
                   boxShadow: '2px 2px 0 rgba(0,0,0,1)'
                 }}
               />
+            </div>
+            
+            {/* Random Quote */}
+            <div className="mt-8">
+              <p 
+                className="text-lg italic mb-3"
+                style={{
+                  color: '#e5e7eb',
+                  textShadow: '2px 2px 0 rgba(0,0,0,1)',
+                  lineHeight: '1.6',
+                }}
+              >
+                &quot;{selectedQuote.text}&quot;
+              </p>
+              <p 
+                className="text-sm"
+                style={{
+                  color: '#9ca3af',
+                  textShadow: '2px 2px 0 rgba(0,0,0,1)',
+                }}
+              >
+                — {selectedQuote.author}
+              </p>
             </div>
           </div>
         </div>

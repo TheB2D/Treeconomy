@@ -19,6 +19,8 @@ interface SkillTreeProps {
   maxLevel?: number;
   skillPaths?: SkillPathMeta[];
   progressionTiers?: ProgressionTierMeta[];
+  onOffsetChange?: (offset: { x: number; y: number }, zoom: number) => void;
+  onSceneChange?: () => void;
 }
 
 const MIN_ZOOM = 0.65;
@@ -42,6 +44,8 @@ export function SkillTree({
   maxLevel,
   skillPaths = [],
   progressionTiers = [],
+  onOffsetChange,
+  onSceneChange,
 }: SkillTreeProps) {
   const [skills, setSkills] = useState<Skill[]>(initialSkills);
   const [skillPoints, setSkillPoints] = useState(20);
@@ -57,6 +61,13 @@ export function SkillTree({
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const nodeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const panStartRef = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 });
+
+  // Notify parent of offset changes for parallax foreground
+  useEffect(() => {
+    if (onOffsetChange) {
+      onOffsetChange(offset, zoom);
+    }
+  }, [offset, zoom, onOffsetChange]);
 
   const canUnlockSkill = useCallback(
     (skill: Skill): boolean => {
@@ -515,6 +526,26 @@ export function SkillTree({
             </div>
           )}
         </div>
+
+        {/* Scene Change Button - Right Edge */}
+        {onSceneChange && (
+          <div 
+            className="absolute right-0 top-1/2 -translate-y-1/2 z-30"
+            style={{
+              writingMode: 'vertical-rl',
+              transform: 'translateY(-50%) rotate(180deg)',
+            }}
+          >
+            <Button
+              onClick={onSceneChange}
+              variant="default"
+              size="lg"
+              className="px-6 py-4"
+            >
+              NATURE&apos;S THOUGHT 🌿
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

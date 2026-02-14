@@ -1,0 +1,1492 @@
+{
+  "skillTree": {
+    "name": "Credit Score Mastery - The Journey to 850",
+    "version": "1.0",
+    "description": "A complete gamified progression system for building excellent credit from zero to hero",
+    "maxLevel": 100,
+    "targetScore": 850,
+    
+    "progressionTiers": [
+      {
+        "tier": 1,
+        "name": "Novice Credit Builder",
+        "scoreRange": "300-579",
+        "level": "1-20",
+        "theme": "Foundation & Learning",
+        "description": "Starting your credit journey - learning the basics and establishing your first accounts"
+      },
+      {
+        "tier": 2,
+        "name": "Apprentice Credit Manager",
+        "scoreRange": "580-669",
+        "level": "21-40",
+        "theme": "Consistency & Growth",
+        "description": "Building positive habits and expanding your credit profile responsibly"
+      },
+      {
+        "tier": 3,
+        "name": "Skilled Credit Strategist",
+        "scoreRange": "670-739",
+        "level": "41-60",
+        "theme": "Optimization & Strategy",
+        "description": "Optimizing your credit usage and strategically managing multiple accounts"
+      },
+      {
+        "tier": 4,
+        "name": "Expert Credit Architect",
+        "scoreRange": "740-799",
+        "level": "61-80",
+        "theme": "Refinement & Excellence",
+        "description": "Fine-tuning every aspect of your credit profile for maximum impact"
+      },
+      {
+        "tier": 5,
+        "name": "Master Credit Virtuoso",
+        "scoreRange": "800-850",
+        "level": "81-100",
+        "theme": "Perfection & Maintenance",
+        "description": "Achieving and maintaining elite credit status with perfect execution"
+      }
+    ],
+
+    "skillPaths": [
+      {
+        "pathId": "PATH_001",
+        "pathName": "Payment Mastery",
+        "pathIcon": "💳",
+        "description": "Master the art of on-time payments - the single most important factor in credit scoring",
+        "primaryImpact": "Payment History (35% of score)",
+        "color": "#4CAF50"
+      },
+      {
+        "pathId": "PATH_002",
+        "pathName": "Utilization Optimization",
+        "pathIcon": "📊",
+        "description": "Learn to manage credit utilization like a pro - keeping balances low relative to limits",
+        "primaryImpact": "Credit Utilization (30% of score)",
+        "color": "#2196F3"
+      },
+      {
+        "pathId": "PATH_003",
+        "pathName": "Credit Age Cultivation",
+        "pathIcon": "⏳",
+        "description": "Build a long, stable credit history through strategic account management",
+        "primaryImpact": "Length of Credit History (15% of score)",
+        "color": "#9C27B0"
+      },
+      {
+        "pathId": "PATH_004",
+        "pathName": "Mix Mastery",
+        "pathIcon": "🎯",
+        "description": "Diversify your credit portfolio with different types of accounts",
+        "primaryImpact": "Credit Mix (10% of score)",
+        "color": "#FF9800"
+      },
+      {
+        "pathId": "PATH_005",
+        "pathName": "Inquiry Intelligence",
+        "pathIcon": "🔍",
+        "description": "Minimize credit inquiries and new account impacts through smart applications",
+        "primaryImpact": "New Credit (10% of score)",
+        "color": "#F44336"
+      },
+      {
+        "pathId": "PATH_006",
+        "pathName": "Dispute & Defense",
+        "pathIcon": "🛡️",
+        "description": "Protect your credit by identifying and disputing errors on your reports",
+        "primaryImpact": "Overall Credit Health",
+        "color": "#607D8B"
+      }
+    ],
+
+    "skills": [
+      {
+        "skillId": "SKILL_001",
+        "pathId": "PATH_001",
+        "tier": 1,
+        "level": 1,
+        "name": "First Payment Success",
+        "description": "Make your very first on-time payment on any credit account",
+        "prerequisites": [],
+        "rewards": {
+          "xp": 100,
+          "scoreImpact": "+5 to +10",
+          "badge": "Payment Pioneer"
+        },
+        "tasks": [
+          "Set up a secured credit card or become authorized user",
+          "Make a small purchase",
+          "Pay the bill in full by the due date"
+        ],
+        "tips": "Set up automatic payments or calendar reminders to never miss a due date"
+      },
+      {
+        "skillId": "SKILL_002",
+        "pathId": "PATH_001",
+        "tier": 1,
+        "level": 3,
+        "name": "Payment Streak: 3 Months",
+        "description": "Successfully make 3 consecutive on-time payments",
+        "prerequisites": ["SKILL_001"],
+        "rewards": {
+          "xp": 200,
+          "scoreImpact": "+10 to +15",
+          "badge": "Consistent Beginner"
+        },
+        "tasks": [
+          "Make on-time payment for month 1",
+          "Make on-time payment for month 2",
+          "Make on-time payment for month 3"
+        ],
+        "tips": "Consistency is key - even small payments build trust with lenders"
+      },
+      {
+        "skillId": "SKILL_003",
+        "pathId": "PATH_001",
+        "tier": 1,
+        "level": 6,
+        "name": "Payment Streak: 6 Months",
+        "description": "Achieve 6 months of perfect payment history",
+        "prerequisites": ["SKILL_002"],
+        "rewards": {
+          "xp": 400,
+          "scoreImpact": "+15 to +25",
+          "badge": "Half-Year Hero"
+        },
+        "tasks": [
+          "Continue perfect payment record",
+          "Monitor credit report for accuracy",
+          "Celebrate your growing payment history"
+        ],
+        "tips": "After 6 months, you're building real credibility with credit bureaus"
+      },
+      {
+        "skillId": "SKILL_004",
+        "pathId": "PATH_001",
+        "tier": 2,
+        "level": 12,
+        "name": "Payment Streak: 12 Months",
+        "description": "Complete one full year of on-time payments",
+        "prerequisites": ["SKILL_003", "SKILL_102"],
+        "rewards": {
+          "xp": 800,
+          "scoreImpact": "+25 to +40",
+          "badge": "Annual Achiever",
+          "unlocks": "Qualification for better credit cards"
+        },
+        "tasks": [
+          "Maintain 12 consecutive on-time payments",
+          "Review your credit score improvement",
+          "Consider applying for an unsecured card upgrade"
+        ],
+        "tips": "One year of perfect payments significantly boosts your creditworthiness"
+      },
+      {
+        "skillId": "SKILL_005",
+        "pathId": "PATH_001",
+        "tier": 3,
+        "level": 24,
+        "name": "Payment Streak: 24 Months",
+        "description": "Achieve 2 years of flawless payment history",
+        "prerequisites": ["SKILL_004", "SKILL_203"],
+        "rewards": {
+          "xp": 1500,
+          "scoreImpact": "+40 to +60",
+          "badge": "Two-Year Titan"
+        },
+        "tasks": [
+          "Maintain 24 months of perfect payments",
+          "Manage multiple accounts with 100% on-time rate",
+          "Build emergency fund to protect payment streak"
+        ],
+        "tips": "2 years establishes you as a reliable borrower in lenders' eyes"
+      },
+      {
+        "skillId": "SKILL_006",
+        "pathId": "PATH_001",
+        "tier": 4,
+        "level": 48,
+        "name": "Payment Streak: 4+ Years",
+        "description": "Maintain 4 years of perfect payment history across all accounts",
+        "prerequisites": ["SKILL_005", "SKILL_205", "SKILL_404"],
+        "rewards": {
+          "xp": 3000,
+          "scoreImpact": "+60 to +80",
+          "badge": "Payment Perfectionist"
+        },
+        "tasks": [
+          "Never miss a payment for 48+ months",
+          "Automate all possible payments",
+          "Build systems to prevent payment failures"
+        ],
+        "tips": "At this level, payment history is your strongest asset"
+      },
+      {
+        "skillId": "SKILL_007",
+        "pathId": "PATH_001",
+        "tier": 5,
+        "level": 84,
+        "name": "Payment Streak: 7+ Years",
+        "description": "Achieve legendary status with 7+ years of perfect payments",
+        "prerequisites": ["SKILL_006", "SKILL_107", "SKILL_506"],
+        "rewards": {
+          "xp": 5000,
+          "scoreImpact": "+80 to +100",
+          "badge": "Payment Immortal",
+          "achievement": "Elite Payment History - 35% Category Mastered"
+        },
+        "tasks": [
+          "Maintain decade-long perfect record",
+          "Help others learn payment discipline",
+          "Enjoy premium lending rates"
+        ],
+        "tips": "You've mastered the most important credit factor - maintain forever!"
+      },
+
+      {
+        "skillId": "SKILL_101",
+        "pathId": "PATH_002",
+        "tier": 1,
+        "level": 2,
+        "name": "Understand Utilization",
+        "description": "Learn what credit utilization is and why it matters",
+        "prerequisites": [],
+        "rewards": {
+          "xp": 100,
+          "scoreImpact": "0",
+          "badge": "Utilization Scholar"
+        },
+        "tasks": [
+          "Learn that utilization = (balance ÷ limit) × 100",
+          "Understand that lower is better (ideally under 30%)",
+          "Check your current utilization ratio"
+        ],
+        "tips": "Utilization is calculated both per-card and overall across all cards"
+      },
+      {
+        "skillId": "SKILL_102",
+        "pathId": "PATH_002",
+        "tier": 1,
+        "level": 5,
+        "name": "Under 50% Utilization",
+        "description": "Reduce credit utilization to below 50% on all cards",
+        "prerequisites": ["SKILL_101"],
+        "rewards": {
+          "xp": 300,
+          "scoreImpact": "+10 to +20",
+          "badge": "Half-Way Hero"
+        },
+        "tasks": [
+          "Calculate current utilization on each card",
+          "Pay down balances to below 50% of limits",
+          "Maintain this ratio going forward"
+        ],
+        "tips": "Even getting under 50% shows improvement to credit bureaus"
+      },
+      {
+        "skillId": "SKILL_103",
+        "pathId": "PATH_002",
+        "tier": 2,
+        "level": 15,
+        "name": "Under 30% Utilization",
+        "description": "Achieve the recommended 30% utilization threshold",
+        "prerequisites": ["SKILL_102", "SKILL_002"],
+        "rewards": {
+          "xp": 600,
+          "scoreImpact": "+20 to +35",
+          "badge": "Utilization Expert"
+        },
+        "tasks": [
+          "Pay down all cards to under 30% of limit",
+          "Set up balance alerts at 25% threshold",
+          "Keep spending in check to maintain ratio"
+        ],
+        "tips": "30% is the magic number where score benefits become significant"
+      },
+      {
+        "skillId": "SKILL_104",
+        "pathId": "PATH_002",
+        "tier": 3,
+        "level": 30,
+        "name": "Under 10% Utilization",
+        "description": "Reach elite utilization levels under 10%",
+        "prerequisites": ["SKILL_103", "SKILL_203"],
+        "rewards": {
+          "xp": 1200,
+          "scoreImpact": "+35 to +50",
+          "badge": "Low Utilization Legend"
+        },
+        "tasks": [
+          "Reduce all balances to under 10% of limits",
+          "Pay off cards multiple times per month if needed",
+          "Consider requesting credit limit increases"
+        ],
+        "tips": "Under 10% is where high credit scores thrive - shows minimal credit dependency"
+      },
+      {
+        "skillId": "SKILL_105",
+        "pathId": "PATH_002",
+        "tier": 4,
+        "level": 50,
+        "name": "Under 5% Utilization",
+        "description": "Achieve ultra-low utilization for maximum score benefit",
+        "prerequisites": ["SKILL_104", "SKILL_602"],
+        "rewards": {
+          "xp": 2000,
+          "scoreImpact": "+50 to +65",
+          "badge": "Utilization Virtuoso"
+        },
+        "tasks": [
+          "Keep all cards under 5% utilization",
+          "Pay balances before statement closing dates",
+          "Track statement dates carefully"
+        ],
+        "tips": "Pay before statement closes to report lower balances to bureaus"
+      },
+      {
+        "skillId": "SKILL_106",
+        "pathId": "PATH_002",
+        "tier": 4,
+        "level": 65,
+        "name": "Zero Balance Reported (Except One)",
+        "description": "Master the AZEO strategy: All Zero Except One card reporting small balance",
+        "prerequisites": ["SKILL_105", "SKILL_605"],
+        "rewards": {
+          "xp": 2500,
+          "scoreImpact": "+65 to +75",
+          "badge": "AZEO Master"
+        },
+        "tasks": [
+          "Pay all cards to zero before statement dates",
+          "Let ONE card report 1-2% utilization",
+          "Coordinate timing across multiple cards"
+        ],
+        "tips": "AZEO (All Zero Except One) maximizes utilization scoring algorithm"
+      },
+      {
+        "skillId": "SKILL_107",
+        "pathId": "PATH_002",
+        "tier": 5,
+        "level": 90,
+        "name": "Perfect Utilization Mastery",
+        "description": "Maintain perfect utilization management indefinitely with high limits",
+        "prerequisites": ["SKILL_106", "SKILL_610"],
+        "rewards": {
+          "xp": 4000,
+          "scoreImpact": "+75 to +90",
+          "badge": "Utilization Immortal",
+          "achievement": "Elite Utilization - 30% Category Mastered"
+        },
+        "tasks": [
+          "Achieve $50k+ in total credit limits",
+          "Maintain under 3% overall utilization",
+          "Optimize statement timing across all cards"
+        ],
+        "tips": "With high limits and low usage, utilization becomes effortless"
+      },
+
+      {
+        "skillId": "SKILL_201",
+        "pathId": "PATH_003",
+        "tier": 1,
+        "level": 1,
+        "name": "First Account Opened",
+        "description": "Open your first credit account - the beginning of your credit age",
+        "prerequisites": [],
+        "rewards": {
+          "xp": 150,
+          "scoreImpact": "+5 to +10",
+          "badge": "Journey Begins"
+        },
+        "tasks": [
+          "Open secured card or become authorized user",
+          "Note your account opening date",
+          "Understand this starts your credit age clock"
+        ],
+        "tips": "Your oldest account is precious - never close it unless absolutely necessary"
+      },
+      {
+        "skillId": "SKILL_202",
+        "pathId": "PATH_003",
+        "tier": 1,
+        "level": 8,
+        "name": "6 Months Credit History",
+        "description": "Reach the minimum credit history age for scoring",
+        "prerequisites": ["SKILL_201"],
+        "rewards": {
+          "xp": 300,
+          "scoreImpact": "+10 to +15",
+          "badge": "History Starter"
+        },
+        "tasks": [
+          "Wait 6 months from first account opening",
+          "Keep account active and in good standing",
+          "First FICO score becomes available"
+        ],
+        "tips": "6 months is when you cross the threshold for a real credit score"
+      },
+      {
+        "skillId": "SKILL_203",
+        "pathId": "PATH_003",
+        "tier": 2,
+        "level": 16,
+        "name": "1 Year Credit History",
+        "description": "Celebrate your first year of credit history",
+        "prerequisites": ["SKILL_202"],
+        "rewards": {
+          "xp": 500,
+          "scoreImpact": "+15 to +25",
+          "badge": "One Year Veteran"
+        },
+        "tasks": [
+          "Reach 1 year average account age",
+          "Keep oldest account open and active",
+          "Use account occasionally to prevent closure"
+        ],
+        "tips": "Make a small purchase on your oldest card every few months to keep it active"
+      },
+      {
+        "skillId": "SKILL_204",
+        "pathId": "PATH_003",
+        "tier": 2,
+        "level": 28,
+        "name": "2 Year Credit History",
+        "description": "Build to 2 years of credit age - entering experienced territory",
+        "prerequisites": ["SKILL_203"],
+        "rewards": {
+          "xp": 800,
+          "scoreImpact": "+25 to +35",
+          "badge": "Seasoned Builder"
+        },
+        "tasks": [
+          "Maintain accounts for 2+ years",
+          "Resist closing old accounts",
+          "Open new accounts sparingly"
+        ],
+        "tips": "Every new account lowers your average age - space applications strategically"
+      },
+      {
+        "skillId": "SKILL_205",
+        "pathId": "PATH_003",
+        "tier": 3,
+        "level": 42,
+        "name": "5 Year Credit History",
+        "description": "Achieve 5 years average credit age - strong historical foundation",
+        "prerequisites": ["SKILL_204", "SKILL_103"],
+        "rewards": {
+          "xp": 1500,
+          "scoreImpact": "+35 to +50",
+          "badge": "Five-Year Force"
+        },
+        "tasks": [
+          "Maintain 5+ year average account age",
+          "Keep oldest accounts active forever",
+          "Strategic new account opening only"
+        ],
+        "tips": "At 5 years, you're in the 'good' category for credit history length"
+      },
+      {
+        "skillId": "SKILL_206",
+        "pathId": "PATH_003",
+        "tier": 4,
+        "level": 70,
+        "name": "10 Year Credit History",
+        "description": "Reach a decade of credit history - veteran status",
+        "prerequisites": ["SKILL_205", "SKILL_304"],
+        "rewards": {
+          "xp": 2500,
+          "scoreImpact": "+50 to +65",
+          "badge": "Decade Dominator"
+        },
+        "tasks": [
+          "Maintain accounts for 10+ years",
+          "Oldest account should be 10+ years old",
+          "Help younger friends start their credit journey"
+        ],
+        "tips": "10+ years is excellent - you're now a credit veteran"
+      },
+      {
+        "skillId": "SKILL_207",
+        "pathId": "PATH_003",
+        "tier": 5,
+        "level": 95,
+        "name": "15+ Year Credit History",
+        "description": "Achieve elite credit age with 15+ years of history",
+        "prerequisites": ["SKILL_206", "SKILL_305", "SKILL_406"],
+        "rewards": {
+          "xp": 4000,
+          "scoreImpact": "+65 to +80",
+          "badge": "Ancient Guardian",
+          "achievement": "Elite Credit Age - 15% Category Mastered"
+        },
+        "tasks": [
+          "Maintain 15+ year average account age",
+          "Oldest account 20+ years if possible",
+          "Pass down wisdom to next generation"
+        ],
+        "tips": "Add children as authorized users to give them a head start on credit age"
+      },
+
+      {
+        "skillId": "SKILL_301",
+        "pathId": "PATH_004",
+        "tier": 1,
+        "level": 4,
+        "name": "Single Account Type",
+        "description": "Understand you're starting with just one type of credit",
+        "prerequisites": [],
+        "rewards": {
+          "xp": 100,
+          "scoreImpact": "0",
+          "badge": "Mix Novice"
+        },
+        "tasks": [
+          "Identify your current credit type (likely credit card)",
+          "Learn about installment vs revolving credit",
+          "Plan future diversification"
+        ],
+        "tips": "Don't rush to diversify - only add accounts you actually need"
+      },
+      {
+        "skillId": "SKILL_302",
+        "pathId": "PATH_004",
+        "tier": 2,
+        "level": 20,
+        "name": "Two Account Types",
+        "description": "Add a second type of credit to your profile",
+        "prerequisites": ["SKILL_301"],
+        "rewards": {
+          "xp": 400,
+          "scoreImpact": "+10 to +20",
+          "badge": "Mix Builder"
+        },
+        "tasks": [
+          "Add either: auto loan, personal loan, or student loan",
+          "Keep existing credit card in good standing",
+          "Manage both account types responsibly"
+        ],
+        "tips": "Credit builder loans are great low-risk options for adding installment credit"
+      },
+      {
+        "skillId": "SKILL_303",
+        "pathId": "PATH_004",
+        "tier": 3,
+        "level": 35,
+        "name": "Diversified Portfolio",
+        "description": "Build a well-rounded credit mix with 3+ account types",
+        "prerequisites": ["SKILL_302"],
+        "rewards": {
+          "xp": 800,
+          "scoreImpact": "+20 to +30",
+          "badge": "Mix Master"
+        },
+        "tasks": [
+          "Maintain credit cards (revolving)",
+          "Maintain installment loan (auto, personal, mortgage)",
+          "All accounts in excellent standing"
+        ],
+        "tasks": [
+          "Have at least 3 different credit types",
+          "Examples: credit card + auto loan + mortgage",
+          "Or: credit card + personal loan + retail card"
+        ],
+        "tips": "Quality over quantity - only take credit you need and can manage"
+      },
+      {
+        "skillId": "SKILL_304",
+        "pathId": "PATH_004",
+        "tier": 4,
+        "level": 55,
+        "name": "Premium Mix Achievement",
+        "description": "Achieve ideal credit mix with mortgage + revolving + installment",
+        "prerequisites": ["SKILL_303", "SKILL_604"],
+        "rewards": {
+          "xp": 1500,
+          "scoreImpact": "+30 to +40",
+          "badge": "Portfolio Perfector"
+        },
+        "tasks": [
+          "Maintain mortgage or large installment loan",
+          "Keep 3-5 credit cards active",
+          "Possibly add retail card if beneficial",
+          "All accounts aged 2+ years"
+        ],
+        "tips": "This mix shows lenders you can handle diverse credit responsibilities"
+      },
+      {
+        "skillId": "SKILL_305",
+        "pathId": "PATH_004",
+        "tier": 5,
+        "level": 88,
+        "name": "Elite Credit Portfolio",
+        "description": "Maintain perfect credit mix with aged, diverse accounts",
+        "prerequisites": ["SKILL_304", "SKILL_609", "SKILL_107"],
+        "rewards": {
+          "xp": 3000,
+          "scoreImpact": "+40 to +50",
+          "badge": "Mix Immortal",
+          "achievement": "Elite Credit Mix - 10% Category Mastered"
+        },
+        "tasks": [
+          "5+ credit cards (various types)",
+          "Mortgage or equivalent large installment",
+          "All accounts 5+ years old",
+          "Perfect payment history across all"
+        ],
+        "tips": "At this level, focus on maintaining what you have, not adding more"
+      },
+
+      {
+        "skillId": "SKILL_401",
+        "pathId": "PATH_005",
+        "tier": 1,
+        "level": 7,
+        "name": "Understand Hard Inquiries",
+        "description": "Learn the difference between hard and soft inquiries",
+        "prerequisites": [],
+        "rewards": {
+          "xp": 100,
+          "scoreImpact": "0",
+          "badge": "Inquiry Student"
+        },
+        "tasks": [
+          "Learn that hard inquiries lower score temporarily",
+          "Understand soft inquiries don't affect score",
+          "Know inquiries stay on report for 2 years"
+        ],
+        "tips": "Hard inquiries impact score for ~12 months, fall off after 24 months"
+      },
+      {
+        "skillId": "SKILL_402",
+        "pathId": "PATH_005",
+        "tier": 1,
+        "level": 10,
+        "name": "Minimize New Applications",
+        "description": "Limit credit applications to only necessary accounts",
+        "prerequisites": ["SKILL_401"],
+        "rewards": {
+          "xp": 200,
+          "scoreImpact": "+5 to +10",
+          "badge": "Application Strategist"
+        },
+        "tasks": [
+          "Wait 6+ months between credit applications",
+          "Research pre-qualification options (soft pulls)",
+          "Avoid retail store card offers unless strategic"
+        ],
+        "tips": "Use pre-qualification tools to check approval odds without hard pull"
+      },
+      {
+        "skillId": "SKILL_403",
+        "pathId": "PATH_005",
+        "tier": 2,
+        "level": 22,
+        "name": "Strategic Application Timing",
+        "description": "Master the art of timing credit applications for minimal impact",
+        "prerequisites": ["SKILL_402"],
+        "rewards": {
+          "xp": 500,
+          "scoreImpact": "+10 to +15",
+          "badge": "Timing Expert"
+        },
+        "tasks": [
+          "Use 30-45 day shopping windows for same loan type",
+          "Combine inquiries when rate shopping",
+          "Space different credit types by 6+ months"
+        ],
+        "tips": "Multiple auto/mortgage inquiries in 30-45 days count as one inquiry"
+      },
+      {
+        "skillId": "SKILL_404",
+        "pathId": "PATH_005",
+        "tier": 3,
+        "level": 45,
+        "name": "Zero New Accounts (12 months)",
+        "description": "Go 12 months without opening any new credit accounts",
+        "prerequisites": ["SKILL_403", "SKILL_602"],
+        "rewards": {
+          "xp": 1000,
+          "scoreImpact": "+15 to +25",
+          "badge": "Patience Master"
+        },
+        "tasks": [
+          "Resist temptation of new credit offers",
+          "Work with existing accounts only",
+          "Let old inquiries age off"
+        ],
+        "tips": "Letting your profile mature without new accounts boosts all age-related metrics"
+      },
+      {
+        "skillId": "SKILL_405",
+        "pathId": "PATH_005",
+        "tier": 4,
+        "level": 68,
+        "name": "Zero Inquiries (24 months)",
+        "description": "Achieve 24 months with zero hard inquiries on your report",
+        "prerequisites": ["SKILL_404", "SKILL_607"],
+        "rewards": {
+          "xp": 2000,
+          "scoreImpact": "+25 to +35",
+          "badge": "Inquiry-Free Legend"
+        },
+        "tasks": [
+          "Maintain current accounts without applying for new ones",
+          "All old inquiries aged off report",
+          "Profile shows stability and maturity"
+        ],
+        "tips": "Clean inquiry report signals you're not desperate for credit"
+      },
+      {
+        "skillId": "SKILL_406",
+        "pathId": "PATH_005",
+        "tier": 5,
+        "level": 92,
+        "name": "Inquiry Immunity",
+        "description": "Master inquiry management - only apply when strategically optimal",
+        "prerequisites": ["SKILL_405", "SKILL_608"],
+        "rewards": {
+          "xp": 3500,
+          "scoreImpact": "+35 to +45",
+          "badge": "Inquiry Immortal",
+          "achievement": "Elite Inquiry Management - 10% Category Mastered"
+        },
+        "tasks": [
+          "Pre-qualify for everything before applying",
+          "Apply only when score is high enough for best rates",
+          "Maintain minimal inquiries indefinitely"
+        ],
+        "tips": "With excellent credit, you can be selective about when/where you apply"
+      },
+
+      {
+        "skillId": "SKILL_501",
+        "pathId": "PATH_006",
+        "tier": 1,
+        "level": 2,
+        "name": "First Credit Report Pull",
+        "description": "Access and review your credit report from all three bureaus",
+        "prerequisites": [],
+        "rewards": {
+          "xp": 150,
+          "scoreImpact": "0",
+          "badge": "Report Reader"
+        },
+        "tasks": [
+          "Get free reports from AnnualCreditReport.com",
+          "Review reports from Equifax, Experian, TransUnion",
+          "Identify any errors or unfamiliar accounts"
+        ],
+        "tips": "You're entitled to one free report per bureau per year"
+      },
+      {
+        "skillId": "SKILL_502",
+        "pathId": "PATH_006",
+        "tier": 1,
+        "level": 9,
+        "name": "First Successful Dispute",
+        "description": "Successfully dispute and remove an error from your credit report",
+        "prerequisites": ["SKILL_501"],
+        "rewards": {
+          "xp": 400,
+          "scoreImpact": "+10 to +30",
+          "badge": "Dispute Warrior"
+        },
+        "tasks": [
+          "Identify inaccurate information on report",
+          "File dispute with credit bureau(s)",
+          "Provide supporting documentation",
+          "Achieve removal or correction"
+        ],
+        "tips": "Common errors: wrong balances, accounts not yours, incorrect late payments"
+      },
+      {
+        "skillId": "SKILL_503",
+        "pathId": "PATH_006",
+        "tier": 2,
+        "level": 18,
+        "name": "Clean Report Achievement",
+        "description": "Achieve a credit report with zero errors or negative items",
+        "prerequisites": ["SKILL_502", "SKILL_401"],
+        "rewards": {
+          "xp": 800,
+          "scoreImpact": "+20 to +50",
+          "badge": "Clean Slate Master"
+        },
+        "tasks": [
+          "Dispute and remove all inaccuracies",
+          "Pay off and wait for charge-offs to age (if applicable)",
+          "Verify report accuracy quarterly"
+        ],
+        "tips": "Some items can't be removed if accurate, but you can add explanatory notes"
+      },
+      {
+        "skillId": "SKILL_504",
+        "pathId": "PATH_006",
+        "tier": 3,
+        "level": 40,
+        "name": "Monitoring Mastery",
+        "description": "Set up comprehensive credit monitoring across all bureaus",
+        "prerequisites": ["SKILL_503", "SKILL_404"],
+        "rewards": {
+          "xp": 1000,
+          "scoreImpact": "+5 to +10",
+          "badge": "Vigilant Guardian"
+        },
+        "tasks": [
+          "Set up monitoring with major bureaus",
+          "Enable alerts for new accounts/inquiries",
+          "Review reports monthly for accuracy",
+          "Catch and dispute errors within 30 days"
+        ],
+        "tips": "Quick response to errors prevents them from affecting your score long-term"
+      },
+      {
+        "skillId": "SKILL_505",
+        "pathId": "PATH_006",
+        "tier": 4,
+        "level": 60,
+        "name": "Identity Protection Pro",
+        "description": "Implement advanced identity theft protection strategies",
+        "prerequisites": ["SKILL_504", "SKILL_610"],
+        "rewards": {
+          "xp": 1500,
+          "scoreImpact": "+10 to +15",
+          "badge": "Security Sentinel"
+        },
+        "tasks": [
+          "Consider credit freeze or fraud alerts",
+          "Use strong unique passwords for financial accounts",
+          "Enable two-factor authentication everywhere",
+          "Monitor dark web for leaked credentials"
+        ],
+        "tips": "Prevention is easier than fixing identity theft damage"
+      },
+      {
+        "skillId": "SKILL_506",
+        "pathId": "PATH_006",
+        "tier": 5,
+        "level": 85,
+        "name": "Perfect Report Maintenance",
+        "description": "Maintain absolutely perfect credit reports across all bureaus for years",
+        "prerequisites": ["SKILL_505", "SKILL_406"],
+        "rewards": {
+          "xp": 3000,
+          "scoreImpact": "+15 to +25",
+          "badge": "Report Immortal",
+          "achievement": "Elite Report Defense - Perfect Credit Profile"
+        },
+        "tasks": [
+          "Zero negative items across all bureaus",
+          "Proactive monitoring catches errors immediately",
+          "Help others learn credit report reading",
+          "Share knowledge about consumer rights"
+        ],
+        "tips": "You've mastered credit defense - now help others protect their credit"
+      },
+
+      {
+        "skillId": "SKILL_601",
+        "pathId": "PATH_001",
+        "tier": 2,
+        "level": 14,
+        "name": "Multiple Account On-Time Mastery",
+        "description": "Successfully manage on-time payments across 3+ credit accounts",
+        "prerequisites": ["SKILL_004", "SKILL_302"],
+        "rewards": {
+          "xp": 600,
+          "scoreImpact": "+15 to +25",
+          "badge": "Multi-Account Manager"
+        },
+        "tasks": [
+          "Maintain 3+ active credit accounts",
+          "Track all payment due dates",
+          "Never miss a single payment across any account"
+        ],
+        "tips": "Use a payment calendar or app to track multiple due dates"
+      },
+      {
+        "skillId": "SKILL_602",
+        "pathId": "PATH_002",
+        "tier": 3,
+        "level": 38,
+        "name": "Credit Limit Increase Strategy",
+        "description": "Successfully request and receive credit limit increases to improve utilization",
+        "prerequisites": ["SKILL_103", "SKILL_402"],
+        "rewards": {
+          "xp": 1000,
+          "scoreImpact": "+20 to +30",
+          "badge": "Limit Booster"
+        },
+        "tasks": [
+          "Request credit limit increases on existing cards",
+          "Provide income documentation if needed",
+          "Lower utilization ratio without changing spending"
+        ],
+        "tips": "Request increases every 6-12 months; many issuers offer automatic increases"
+      },
+      {
+        "skillId": "SKILL_603",
+        "pathId": "PATH_003",
+        "tier": 2,
+        "level": 25,
+        "name": "Authorized User Advantage",
+        "description": "Get added as authorized user on a well-aged account or add someone to yours",
+        "prerequisites": ["SKILL_203", "SKILL_302"],
+        "rewards": {
+          "xp": 700,
+          "scoreImpact": "+15 to +35",
+          "badge": "AU Strategist"
+        },
+        "tasks": [
+          "Become AU on parent/spouse's old account, OR",
+          "Add trusted person to your aged account",
+          "Ensure primary account has perfect payment history",
+          "Benefit from account age boost"
+        ],
+        "tips": "Authorized user status can instantly add years to your credit age"
+      },
+      {
+        "skillId": "SKILL_604",
+        "pathId": "PATH_004",
+        "tier": 2,
+        "level": 26,
+        "name": "Credit Builder Loan",
+        "description": "Successfully complete a credit builder loan program",
+        "prerequisites": ["SKILL_302", "SKILL_202"],
+        "rewards": {
+          "xp": 600,
+          "scoreImpact": "+15 to +25",
+          "badge": "Builder Graduate"
+        },
+        "tasks": [
+          "Open credit builder loan with bank/credit union",
+          "Make 12+ on-time payments",
+          "Receive savings payout at completion",
+          "Add positive installment tradeline"
+        ],
+        "tips": "Credit builder loans report to all three bureaus and build savings too"
+      },
+      {
+        "skillId": "SKILL_605",
+        "pathId": "PATH_002",
+        "tier": 4,
+        "level": 58,
+        "name": "Statement Date Optimization",
+        "description": "Master the timing of payments relative to statement closing dates",
+        "prerequisites": ["SKILL_104", "SKILL_602"],
+        "rewards": {
+          "xp": 1800,
+          "scoreImpact": "+25 to +40",
+          "badge": "Timing Virtuoso"
+        },
+        "tasks": [
+          "Identify exact statement closing dates for all cards",
+          "Make payments 2-3 days before statement closes",
+          "Ensure low balances report to bureaus",
+          "Maintain system across all cards"
+        ],
+        "tips": "What's reported to bureaus is your statement balance, not current balance"
+      },
+      {
+        "skillId": "SKILL_606",
+        "pathId": "PATH_001",
+        "tier": 3,
+        "level": 36,
+        "name": "Emergency Fund Buffer",
+        "description": "Build 3-6 month emergency fund to protect payment streak",
+        "prerequisites": ["SKILL_005", "SKILL_205"],
+        "rewards": {
+          "xp": 1200,
+          "scoreImpact": "+10 to +20",
+          "badge": "Financial Fortress"
+        },
+        "tasks": [
+          "Save 3-6 months of expenses in emergency fund",
+          "Keep fund separate from daily accounts",
+          "Use only for true emergencies",
+          "Ensures you can always make payments"
+        ],
+        "tips": "Emergency fund is your insurance policy against payment disasters"
+      },
+      {
+        "skillId": "SKILL_607",
+        "pathId": "PATH_005",
+        "tier": 3,
+        "level": 48,
+        "name": "Pre-Approval Shopping",
+        "description": "Use pre-qualification tools to shop rates without hard inquiries",
+        "prerequisites": ["SKILL_403", "SKILL_103"],
+        "rewards": {
+          "xp": 1100,
+          "scoreImpact": "+10 to +15",
+          "badge": "Smart Shopper"
+        },
+        "tasks": [
+          "Use CardMatch, Credit Karma, issuer pre-qual tools",
+          "Compare offers without impacting score",
+          "Only apply when confident of approval",
+          "Find best rates risk-free"
+        ],
+        "tips": "Pre-qualification is your friend - always check before applying"
+      },
+      {
+        "skillId": "SKILL_608",
+        "pathId": "PATH_006",
+        "tier": 3,
+        "level": 52,
+        "name": "Goodwill Letter Success",
+        "description": "Successfully request goodwill adjustment for late payment removal",
+        "prerequisites": ["SKILL_503", "SKILL_607"],
+        "rewards": {
+          "xp": 1300,
+          "scoreImpact": "+20 to +40",
+          "badge": "Goodwill Negotiator"
+        },
+        "tasks": [
+          "Identify legitimate late payment from good customer history",
+          "Write professional goodwill letter to creditor",
+          "Explain circumstances and request removal",
+          "Achieve late payment removal as courtesy"
+        ],
+        "tips": "Goodwill letters work best if you have otherwise perfect history and valid reason"
+      },
+      {
+        "skillId": "SKILL_609",
+        "pathId": "PATH_004",
+        "tier": 3,
+        "level": 44,
+        "name": "Retail Card Strategic Use",
+        "description": "Add retail credit card strategically for mix without overspending",
+        "prerequisites": ["SKILL_303", "SKILL_602"],
+        "rewards": {
+          "xp": 900,
+          "scoreImpact": "+10 to +20",
+          "badge": "Retail Strategist"
+        },
+        "tasks": [
+          "Choose retail card from store you already shop at",
+          "Use only for planned purchases",
+          "Pay in full monthly",
+          "Benefit from rewards + credit mix boost"
+        ],
+        "tips": "Retail cards often have lower approval requirements and improve credit mix"
+      },
+      {
+        "skillId": "SKILL_610",
+        "pathId": "PATH_003",
+        "tier": 4,
+        "level": 72,
+        "name": "Never Close Old Accounts",
+        "description": "Maintain your oldest accounts active indefinitely",
+        "prerequisites": ["SKILL_206", "SKILL_606"],
+        "rewards": {
+          "xp": 2000,
+          "scoreImpact": "+30 to +45",
+          "badge": "Account Preserver"
+        },
+        "tasks": [
+          "Keep oldest card(s) active with small recurring charges",
+          "Set up autopay for these charges",
+          "Never close accounts over 5 years old",
+          "Sock drawer cards if needed but keep them alive"
+        ],
+        "tips": "A Netflix subscription on your oldest card keeps it active automatically"
+      }
+    ],
+
+    "milestones": [
+      {
+        "milestoneId": "MILE_001",
+        "name": "Credit Rookie",
+        "description": "Complete all Tier 1 foundation skills",
+        "requiredLevel": 20,
+        "requiredSkills": ["SKILL_001", "SKILL_002", "SKILL_101", "SKILL_201", "SKILL_401", "SKILL_501"],
+        "rewards": {
+          "xp": 2000,
+          "badge": "Foundation Complete",
+          "title": "Unlocked: Credit Basics Mastered"
+        }
+      },
+      {
+        "milestoneId": "MILE_002",
+        "name": "Credit Apprentice",
+        "description": "Complete all Tier 2 growth skills",
+        "requiredLevel": 40,
+        "requiredSkills": ["SKILL_004", "SKILL_103", "SKILL_204", "SKILL_302", "SKILL_403"],
+        "rewards": {
+          "xp": 4000,
+          "badge": "Growth Achieved",
+          "title": "Unlocked: Consistent Progress Proven"
+        }
+      },
+      {
+        "milestoneId": "MILE_003",
+        "name": "Credit Professional",
+        "description": "Complete all Tier 3 optimization skills",
+        "requiredLevel": 60,
+        "requiredSkills": ["SKILL_005", "SKILL_104", "SKILL_205", "SKILL_303", "SKILL_404", "SKILL_504"],
+        "rewards": {
+          "xp": 6000,
+          "badge": "Optimization Master",
+          "title": "Unlocked: Strategic Credit Management"
+        }
+      },
+      {
+        "milestoneId": "MILE_004",
+        "name": "Credit Expert",
+        "description": "Complete all Tier 4 refinement skills",
+        "requiredLevel": 80,
+        "requiredSkills": ["SKILL_006", "SKILL_105", "SKILL_206", "SKILL_304", "SKILL_405", "SKILL_505"],
+        "rewards": {
+          "xp": 8000,
+          "badge": "Excellence Embodied",
+          "title": "Unlocked: Advanced Credit Mastery"
+        }
+      },
+      {
+        "milestoneId": "MILE_005",
+        "name": "Credit Master",
+        "description": "Achieve maximum level and complete all elite skills",
+        "requiredLevel": 100,
+        "requiredSkills": ["SKILL_007", "SKILL_107", "SKILL_207", "SKILL_305", "SKILL_406", "SKILL_506"],
+        "rewards": {
+          "xp": 10000,
+          "badge": "Perfect Credit Achieved",
+          "title": "ULTIMATE: Credit Score 850 - The Dream Realized",
+          "achievement": "Credit Immortal - Join the Elite 1%"
+        }
+      }
+    ],
+
+    "achievementCategories": [
+      {
+        "category": "Speed Runner",
+        "achievements": [
+          {
+            "name": "6-Month Sprint",
+            "description": "Improve score by 100+ points in 6 months",
+            "reward": "Speed Demon Badge"
+          },
+          {
+            "name": "1-Year Transformer",
+            "description": "Improve score by 150+ points in 12 months",
+            "reward": "Transformation Master Badge"
+          },
+          {
+            "name": "2-Year Phenomenon",
+            "description": "Go from 550 to 750+ in 24 months",
+            "reward": "Phoenix Rising Badge"
+          }
+        ]
+      },
+      {
+        "category": "Perfectionist",
+        "achievements": [
+          {
+            "name": "Triple 800 Club",
+            "description": "Achieve 800+ score with all three bureaus simultaneously",
+            "reward": "Triple Crown Badge"
+          },
+          {
+            "name": "Perfect 850",
+            "description": "Achieve the mythical 850 credit score",
+            "reward": "Unicorn Status + Hall of Fame Entry"
+          },
+          {
+            "name": "5-Year Perfection",
+            "description": "Maintain 800+ score for 60 consecutive months",
+            "reward": "Diamond Badge"
+          }
+        ]
+      },
+      {
+        "category": "Recovery Hero",
+        "achievements": [
+          {
+            "name": "Comeback Kid",
+            "description": "Recover from bankruptcy to 700+ score",
+            "reward": "Phoenix Badge"
+          },
+          {
+            "name": "Dispute Champion",
+            "description": "Successfully dispute and remove 10+ negative items",
+            "reward": "Dispute Master Badge"
+          },
+          {
+            "name": "From Zero to Hero",
+            "description": "Build from no credit history to 750+ score",
+            "reward": "Builder's Crown"
+          }
+        ]
+      },
+      {
+        "category": "Community Leader",
+        "achievements": [
+          {
+            "name": "Credit Mentor",
+            "description": "Help 5 people improve their credit scores",
+            "reward": "Teacher's Badge"
+          },
+          {
+            "name": "Authorized User Angel",
+            "description": "Add 3+ people as authorized users to help their credit",
+            "reward": "Guardian Angel Badge"
+          },
+          {
+            "name": "Knowledge Sharer",
+            "description": "Create educational content that helps 100+ people",
+            "reward": "Influencer Badge"
+          }
+        ]
+      }
+    ],
+
+    "powerUps": [
+      {
+        "powerUpId": "BOOST_001",
+        "name": "Credit Limit Increase Boost",
+        "description": "Request credit limit increases across all cards",
+        "effect": "Immediately improve utilization ratio by increasing total available credit",
+        "cooldown": "6 months",
+        "requirements": ["6+ months account history", "Good payment record"]
+      },
+      {
+        "powerUpId": "BOOST_002",
+        "name": "Authorized User Power-Up",
+        "description": "Get added to a well-aged account with perfect history",
+        "effect": "Instantly boost average account age and add positive payment history",
+        "cooldown": "One-time per account",
+        "requirements": ["Trusted person with excellent credit"]
+      },
+      {
+        "powerUpId": "BOOST_003",
+        "name": "Balance Transfer Optimization",
+        "description": "Transfer high-utilization balances to new 0% APR card",
+        "effect": "Lower overall utilization and reduce interest paid",
+        "cooldown": "12-18 months",
+        "requirements": ["Good credit score", "Transfer fee consideration"]
+      },
+      {
+        "powerUpId": "BOOST_004",
+        "name": "Rapid Rescore",
+        "description": "Pay down balances and request rapid rescore from lender",
+        "effect": "Get credit score updated within 3-5 days instead of 30+ days",
+        "cooldown": "As needed",
+        "requirements": ["Working with mortgage lender", "Recent positive changes"]
+      },
+      {
+        "powerUpId": "BOOST_005",
+        "name": "Dispute Blitz",
+        "description": "Aggressively dispute all questionable items on credit report",
+        "effect": "Potentially remove multiple negative items quickly",
+        "cooldown": "30 days per bureau",
+        "requirements": ["Legitimate errors to dispute"]
+      },
+      {
+        "powerUpId": "BOOST_006",
+        "name": "Credit Freeze Shield",
+        "description": "Freeze credit to prevent unauthorized inquiries and accounts",
+        "effect": "Protect score from identity theft damage",
+        "cooldown": "Always active until lifted",
+        "requirements": ["None - free by law"]
+      }
+    ],
+
+    "dailyQuests": [
+      {
+        "questId": "DAILY_001",
+        "name": "Balance Check",
+        "description": "Check all credit card balances and confirm they're under target utilization",
+        "xpReward": 10,
+        "frequency": "Daily"
+      },
+      {
+        "questId": "DAILY_002",
+        "name": "Payment Confirmation",
+        "description": "Verify all bills are scheduled for payment within due dates",
+        "xpReward": 15,
+        "frequency": "Daily"
+      },
+      {
+        "questId": "DAILY_003",
+        "name": "Financial News Scan",
+        "description": "Read one article about credit, personal finance, or money management",
+        "xpReward": 5,
+        "frequency": "Daily"
+      }
+    ],
+
+    "weeklyQuests": [
+      {
+        "questId": "WEEKLY_001",
+        "name": "Score Check",
+        "description": "Check credit score from at least one source",
+        "xpReward": 50,
+        "frequency": "Weekly"
+      },
+      {
+        "questId": "WEEKLY_002",
+        "name": "Account Review",
+        "description": "Review all credit accounts for unauthorized charges or errors",
+        "xpReward": 40,
+        "frequency": "Weekly"
+      },
+      {
+        "questId": "WEEKLY_003",
+        "name": "Budget Reconciliation",
+        "description": "Review spending and ensure you can pay all credit balances in full",
+        "xpReward": 60,
+        "frequency": "Weekly"
+      }
+    ],
+
+    "monthlyQuests": [
+      {
+        "questId": "MONTHLY_001",
+        "name": "Full Report Review",
+        "description": "Pull and review full credit report from one bureau (rotate monthly)",
+        "xpReward": 200,
+        "frequency": "Monthly"
+      },
+      {
+        "questId": "MONTHLY_002",
+        "name": "Utilization Optimization",
+        "description": "Calculate exact utilization and optimize payment timing for next month",
+        "xpReward": 150,
+        "frequency": "Monthly"
+      },
+      {
+        "questId": "MONTHLY_003",
+        "name": "Financial Goal Progress",
+        "description": "Review progress toward emergency fund and other financial goals",
+        "xpReward": 100,
+        "frequency": "Monthly"
+      },
+      {
+        "questId": "MONTHLY_004",
+        "name": "Account Activity Maintenance",
+        "description": "Use any dormant cards with small purchase to prevent closure",
+        "xpReward": 120,
+        "frequency": "Monthly"
+      }
+    ],
+
+    "leaderboards": [
+      {
+        "name": "Fastest Improvement",
+        "metric": "Points gained per month",
+        "timeframe": "Rolling 6 months"
+      },
+      {
+        "name": "Highest Score",
+        "metric": "Current credit score",
+        "timeframe": "Current"
+      },
+      {
+        "name": "Longest Perfect Streak",
+        "metric": "Months of 100% on-time payments",
+        "timeframe": "All-time"
+      },
+      {
+        "name": "Most Accounts Managed",
+        "metric": "Number of active accounts with perfect history",
+        "timeframe": "Current"
+      },
+      {
+        "name": "Community Helper",
+        "metric": "Number of people helped improve credit",
+        "timeframe": "All-time"
+      }
+    ],
+
+    "tips": {
+      "beginner": [
+        "Start with a secured credit card if you have no credit history",
+        "Set up autopay for at least the minimum payment - never miss a due date",
+        "Keep your first credit card forever - it will become your oldest account",
+        "Use only 10-30% of your credit limit, even if you pay in full",
+        "Check your credit report for free at AnnualCreditReport.com",
+        "Don't apply for multiple credit cards in a short period",
+        "Become an authorized user on a parent/spouse's old account for instant history"
+      ],
+      "intermediate": [
+        "Pay before statement closing date to report lower balances",
+        "Request credit limit increases every 6-12 months to improve utilization",
+        "Use multiple cards for different spending categories to build diverse history",
+        "Set balance alerts at 25% of your credit limit",
+        "Dispute any errors on your credit report immediately",
+        "Consider a credit-builder loan to add installment credit to your mix",
+        "Space out credit applications by at least 6 months"
+      ],
+      "advanced": [
+        "Use AZEO (All Zero Except One) strategy for maximum utilization scoring",
+        "Time all payments to optimize statement balances across all cards",
+        "Keep oldest accounts active with small automated recurring charges",
+        "Use pre-qualification tools before applying to avoid unnecessary inquiries",
+        "Build 6+ months emergency fund to protect your payment streak",
+        "Add family members as authorized users to help their credit",
+        "Track credit score changes after each optimization to learn what works"
+      ],
+      "expert": [
+        "Maintain under 3% overall utilization with high credit limits",
+        "Coordinate statement dates across cards for optimal reporting",
+        "Use rapid rescore when timing matters (mortgage applications)",
+        "Freeze credit when not actively seeking new accounts",
+        "Consider business credit to separate from personal profile",
+        "Leverage credit card benefits to maximize value beyond just score building",
+        "Teach others about credit - sharing knowledge reinforces your mastery"
+      ]
+    },
+
+    "resources": {
+      "free_credit_reports": [
+        "AnnualCreditReport.com - Official free annual reports",
+        "Credit Karma - Free TransUnion & Equifax scores",
+        "Credit Sesame - Free credit monitoring",
+        "Experian.com - Free Experian credit score"
+      ],
+      "education": [
+        "MyFICO Forums - Community wisdom on credit optimization",
+        "r/personalfinance - Reddit community with credit guides",
+        "Consumer Financial Protection Bureau - Official resources",
+        "Experian, TransUnion, Equifax blogs - Bureau insights"
+      ],
+      "tools": [
+        "Mint - Budget and credit tracking",
+        "YNAB (You Need A Budget) - Payment planning",
+        "Undebt.it - Debt payoff planning",
+        "CardMatch - Pre-qualification tool"
+      ],
+      "legal": [
+        "Fair Credit Reporting Act (FCRA) - Know your rights",
+        "CFPB Complaint System - Report credit reporting errors",
+        "Identity theft resources at IdentityTheft.gov"
+      ]
+    },
+
+    "notes_for_llm": {
+      "understanding_progression": "Users progress through 5 tiers from Novice (300-579 score) to Master (800-850 score). Each tier has specific skills across 6 paths that must be completed to advance.",
+      
+      "skill_prerequisites": "Skills use AND prerequisites. Every skill listed in a node's prerequisites array must be completed to unlock that node. This enables cross-path gating and multi-factor progression gates.",
+      
+      "score_impact_explanation": "The 'scoreImpact' field shows estimated point increases. These are cumulative - completing multiple skills compounds the effect. Actual impact varies by individual credit profile.",
+      
+      "path_importance": "The 6 paths correspond to the 5 FICO scoring factors plus dispute/defense: Payment History (35%), Utilization (30%), Credit Age (15%), Credit Mix (10%), New Credit (10%), and Report Defense (overall health).",
+      
+      "gamification_mechanics": "XP rewards, badges, achievements, daily/weekly/monthly quests, leaderboards, and milestones create engagement. Power-ups represent real credit-building strategies.",
+      
+      "realistic_timelines": "Credit building is a long game. Skills span from level 1 (immediate) to level 95+ (requiring 15+ years). This reflects reality - excellent credit cannot be rushed.",
+      
+      "tier_transitions": "Users can work on skills from higher tiers while still in lower tiers if prerequisites are met. The tier system is about credit score range, not strict level gating.",
+      
+      "multiple_path_progression": "Users should work on multiple paths simultaneously (e.g., making on-time payments while also managing utilization and building credit age). Real credit improvement requires multi-factor optimization.",
+      
+      "quest_system": "Daily/weekly/monthly quests reinforce good habits. They're repeatable and provide ongoing engagement beyond one-time skill completion.",
+      
+      "achievement_variety": "Achievements recognize different journeys: fast improvement (Speed Runner), perfection (Perfectionist), recovery from bad credit (Recovery Hero), and helping others (Community Leader).",
+      
+      "llm_usage_tips": "When explaining credit concepts to users, reference specific skills by ID and name. Use the tips sections for practical advice. Connect abstract goals ('improve my score') to concrete skill paths ('start with SKILL_001 in Payment Mastery path'). The skill tree provides structure for personalized credit improvement plans."
+    }
+  }
+}

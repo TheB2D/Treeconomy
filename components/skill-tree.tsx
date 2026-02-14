@@ -410,7 +410,7 @@ export function SkillTree({
   };
 
   return (
-    <div className="w-full min-h-screen bg-transparent scanlines flex items-center justify-center p-5">
+    <div className="w-full min-h-screen bg-transparent scanlines flex items-center justify-center p-5 relative">
       <div className="relative w-full max-w-[1700px] h-[92vh] border-4 border-border bg-card/40 pixel-border overflow-hidden">
         <div className="absolute inset-x-0 top-0 z-20 bg-card/75 backdrop-blur-[1px] border-b-4 border-border p-4">
           <div className="text-center">
@@ -526,26 +526,6 @@ export function SkillTree({
             </div>
           )}
         </div>
-
-        {/* Scene Change Button - Right Edge */}
-        {onSceneChange && (
-          <div 
-            className="absolute right-0 top-1/2 -translate-y-1/2 z-30"
-            style={{
-              writingMode: 'vertical-rl',
-              transform: 'translateY(-50%) rotate(180deg)',
-            }}
-          >
-            <Button
-              onClick={onSceneChange}
-              variant="default"
-              size="lg"
-              className="px-6 py-4"
-            >
-              NATURE&apos;S THOUGHT 🌿
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );

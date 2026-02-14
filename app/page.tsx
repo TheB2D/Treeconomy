@@ -91,16 +91,16 @@ export default function Home() {
             <Button
               onClick={handleSceneChange}
               variant="default"
-              className="h-auto min-h-0 w-auto min-w-0 px-2 py-3"
+              className="h-auto min-h-0 w-auto min-w-0 px-2 py-3 flex items-center gap-2"
               style={{
-                display: 'block',
                 width: 'fit-content',
                 writingMode: 'vertical-rl',
                 transform: 'rotate(180deg)',
                 textOrientation: 'mixed',
               }}
             >
-              NATURE&apos;S THOUGHT 🌿
+              NATURE&apos;S THOUGHT
+              <img src="/icons/comment.png" alt="Nature thoughts" className="w-4 h-4 object-contain" />
             </Button>
           </div>
         </>

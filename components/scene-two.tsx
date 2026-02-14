@@ -26,9 +26,9 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
   const fullMessage = "Your financial choices ripple through the ecosystem. Every dollar you owe funds projects that either heal or harm our planet. By understanding where your money goes, you gain the power to redirect it toward a sustainable future.";
   
   const banks: BankData[] = [
-    { name: "Chase Bank", logo: "🏦", debt: 15420, fossilFuelInvestment: 18.5 },
-    { name: "Capital One", logo: "💳", debt: 8750, fossilFuelInvestment: 12.3 },
-    { name: "Wells Fargo", logo: "🏛️", debt: 6200, fossilFuelInvestment: 21.7 },
+    { name: "Chase Bank", logo: "/icons/key_t1.png", debt: 15420, fossilFuelInvestment: 18.5 },
+    { name: "Capital One", logo: "/icons/swipe_t2.png", debt: 8750, fossilFuelInvestment: 12.3 },
+    { name: "Wells Fargo", logo: "/icons/scroll_t3.png", debt: 6200, fossilFuelInvestment: 21.7 },
   ];
 
   useEffect(() => {
@@ -168,15 +168,19 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                     AI RANGER ANALYSIS
                   </p>
                 </div>
-                <div 
-                  className="text-3xl"
+                <img
+                  src="/icons/leaf.png"
+                  alt="Leaf status"
+                  className="w-8 h-8 object-contain"
                   style={{
                     animation: 'leafSway 2s ease-in-out infinite',
                     transformOrigin: 'top center',
                   }}
-                >
-                  🍃
-                </div>
+                />
+              </div>
+              <div className="mt-2 flex items-center justify-end gap-2">
+                <img src="/icons/sound_on.png" alt="Sound on" className="w-5 h-5 object-contain opacity-80" />
+                <img src="/icons/music.png" alt="Music" className="w-5 h-5 object-contain opacity-70" />
               </div>
             </div>
 
@@ -190,8 +194,8 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                   minHeight: '180px',
                 }}
               >
-                <div className="absolute top-2 right-2 text-4xl opacity-30">
-                  🏭
+                <div className="absolute top-2 right-2 opacity-30">
+                  <img src="/icons/downgrade.png" alt="Impact warning" className="w-10 h-10 object-contain" />
                 </div>
                 <div className="relative z-10">
                   <div 
@@ -261,7 +265,7 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                     >
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <span className="text-2xl">{bank.logo}</span>
+                          <img src={bank.logo} alt={`${bank.name} icon`} className="w-7 h-7 object-contain" />
                           <span className="font-semibold text-sm text-foreground">
                             {bank.name}
                           </span>
@@ -277,7 +281,10 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                         </span>
                         <span className="flex items-center gap-1 font-bold">
                           <span style={{ color: getFossilFuelColor(bank.fossilFuelInvestment) }}>
-                            🛢️ {bank.fossilFuelInvestment}%
+                            <span className="inline-flex items-center gap-1">
+                              <img src="/icons/scroll6.png" alt="Fossil fuel metric" className="w-4 h-4 object-contain" />
+                              {bank.fossilFuelInvestment}%
+                            </span>
                           </span>
                         </span>
                       </div>
@@ -297,7 +304,7 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                   <div 
                     className="w-8 h-8 border-2 border-primary bg-primary/20 flex-shrink-0 flex items-center justify-center"
                   >
-                    🌲
+                    <img src="/icons/scroll_t7.png" alt="AI Ranger" className="w-5 h-5 object-contain" />
                   </div>
                   
                   <div className="flex-1">
@@ -339,7 +346,10 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                   size="lg"
                   className="w-full"
                 >
-                  🌱 SHOW GREEN ALTERNATIVES
+                  <span className="inline-flex items-center gap-2">
+                    <img src="/icons/up.png" alt="Up arrow" className="w-4 h-4 object-contain" />
+                    SHOW GREEN ALTERNATIVES
+                  </span>
                 </Button>
                 
                 <Button
@@ -347,7 +357,10 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                   size="lg"
                   className="w-full"
                 >
-                  EXPLAIN MY OPTIONS
+                  <span className="inline-flex items-center gap-2">
+                    <img src="/icons/down.png" alt="Down arrow" className="w-4 h-4 object-contain" />
+                    EXPLAIN MY OPTIONS
+                  </span>
                 </Button>
               </div>
 
@@ -360,7 +373,9 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
               >
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <div className="text-xl mb-1">🌳</div>
+                    <div className="text-xl mb-1 inline-flex justify-center">
+                      <img src="/icons/strength.png" alt="Trees planted" className="w-5 h-5 object-contain" />
+                    </div>
                     <div className="text-[9px] text-muted-foreground">
                       TREES PLANTED
                     </div>
@@ -375,7 +390,9 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                   </div>
                   
                   <div className="border-l-2 border-r-2 border-border">
-                    <div className="text-xl mb-1">⭐</div>
+                    <div className="text-xl mb-1 inline-flex justify-center">
+                      <img src="/icons/up.png" alt="Score progress" className="w-5 h-5 object-contain" />
+                    </div>
                     <div className="text-[9px] text-muted-foreground">
                       SCORE PROGRESS
                     </div>
@@ -390,7 +407,9 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                   </div>
                   
                   <div>
-                    <div className="text-xl mb-1">☁️</div>
+                    <div className="text-xl mb-1 inline-flex justify-center">
+                      <img src="/icons/down.png" alt="CO2 offset" className="w-5 h-5 object-contain" />
+                    </div>
                     <div className="text-[9px] text-muted-foreground">
                       CO2 OFFSET
                     </div>
@@ -414,7 +433,10 @@ export function SceneTwo({ onBack }: SceneTwoProps) {
                   size="lg"
                   className="w-full"
                 >
-                  ← Return to Skill Tree
+                  <span className="inline-flex items-center gap-2">
+                    <img src="/icons/cross.png" alt="Close" className="w-4 h-4 object-contain" />
+                    Return to Skill Tree
+                  </span>
                 </Button>
               </div>
             </div>

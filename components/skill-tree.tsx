@@ -521,8 +521,13 @@ export function SkillTree({
         <div className="absolute inset-x-0 bottom-0 z-20 border-t-4 border-border bg-card/75 p-3 text-center text-[10px] text-muted-foreground">
           DRAG EMPTY SPACE TO PAN • SCROLL TO ZOOM • CLICK NODES TO UNLOCK • HOVER FOR DETAILS
           {skillPaths.length > 0 && (
-            <div className="mt-1 text-[9px]">
-              {skillPaths.map((p) => `${p.pathIcon} ${p.pathName}`).join("  |  ")}
+            <div className="mt-2 flex flex-wrap items-center justify-center gap-2 text-[9px]">
+              {skillPaths.map((path) => (
+                <div key={path.pathId} className="inline-flex items-center gap-1 border border-border px-2 py-1 bg-card/70">
+                  <img src={path.pathIcon} alt={`${path.pathName} icon`} className="w-3 h-3 object-contain" />
+                  <span>{path.pathName}</span>
+                </div>
+              ))}
             </div>
           )}
         </div>

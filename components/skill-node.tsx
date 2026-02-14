@@ -41,9 +41,14 @@ export function SkillNode({
     setTooltipPlacement(rect.top < 340 ? "bottom" : "top");
   };
 
+  const skillAltText = `${skill.name} icon`;
+
   return (
     <div
-      className="relative flex flex-col items-center group"
+      className={cn(
+        "relative flex flex-col items-center group z-10",
+        showTooltip && "z-[2000]"
+      )}
       onMouseEnter={() => {
         updateTooltipPlacement();
         setShowTooltip(true);
@@ -85,11 +90,11 @@ export function SkillNode({
         )}
       >
         {/* Icon */}
-        <div className="text-2xl mb-1 drop-shadow-lg">
+        <div className="mb-1 drop-shadow-lg">
           {isLocked && !isAvailable ? (
             <Lock className="w-6 h-6" />
           ) : (
-            skill.icon
+            <img src={skill.icon} alt={skillAltText} className="w-8 h-8 object-contain pixelated" />
           )}
         </div>
 
@@ -142,7 +147,7 @@ export function SkillNode({
           <div className="bg-card border-4 border-border p-4 w-[360px] max-w-[calc(100vw-24px)] pixel-border">
             <div className="flex items-start justify-between mb-2">
               <h3 className="text-sm font-bold text-foreground">{skill.name}</h3>
-              <span className="text-2xl ml-2">{skill.icon}</span>
+              <img src={skill.icon} alt={skillAltText} className="w-8 h-8 ml-2 object-contain pixelated" />
             </div>
             
             <div className="space-y-2 text-[10px] leading-relaxed">
@@ -194,7 +199,7 @@ export function SkillNode({
 
               {isLocked && !isAvailable && (
                 <div className="pt-2 text-destructive text-center">
-                  🔒 LOCKED
+                  LOCKED
                 </div>
               )}
 

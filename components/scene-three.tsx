@@ -4,18 +4,18 @@ import XpBar from "@/components/ui/8bit/xp-bar";
 
 export function SceneThree() {
   const rankTiers = [
-    { tier: 1, name: "Sprout Scout" },
-    { tier: 2, name: "Bud Runner" },
-    { tier: 3, name: "Leafkeeper" },
-    { tier: 4, name: "Canopy Cadet" },
-    { tier: 5, name: "Grove Guardian" },
-    { tier: 6, name: "Root Ranger" },
-    { tier: 7, name: "Forest Warden" },
-    { tier: 8, name: "Wildwood Knight" },
-    { tier: 9, name: "Emerald Captain" },
-    { tier: 10, name: "Ancient Sentinel" },
-    { tier: 11, name: "Mythic Arbor" },
-    { tier: 12, name: "Treeconomy Legend" },
+    { tier: 1, name: "Sprout I" },
+    { tier: 2, name: "Sprout II" },
+    { tier: 3, name: "Sprout III" },
+    { tier: 4, name: "Guardian I" },
+    { tier: 5, name: "Guardian II" },
+    { tier: 6, name: "Guardian III" },
+    { tier: 7, name: "Warden I" },
+    { tier: 8, name: "Warden II" },
+    { tier: 9, name: "Warden III" },
+    { tier: 10, name: "Sentinel I" },
+    { tier: 11, name: "Sentinel II" },
+    { tier: 12, name: "Sentinel III" },
   ];
 
   const topRankings = [

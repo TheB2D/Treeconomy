@@ -1,50 +1,61 @@
-import * as React from "react";
-import { cva, type VariantProps } from "class-variance-authority";
+"use client";
+
+import { ButtonHTMLAttributes } from "react";
 import { cn } from "@/lib/utils";
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap text-xs font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 pixel-border pixel-hover select-none cursor-pointer",
-  {
-    variants: {
-      variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90",
-        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/90",
-        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90",
-        outline: "border-2 border-current bg-transparent hover:bg-accent hover:text-accent-foreground",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
-      },
-      size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-8 px-3 text-xs",
-        lg: "h-12 px-8",
-        icon: "h-10 w-10",
-      },
-    },
-    defaultVariants: {
-      variant: "default",
-      size: "default",
-    },
-  }
-);
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  asChild?: boolean;
+interface EightBitButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: "primary" | "secondary" | "success" | "warning" | "default" | "outline" | "destructive";
+  size?: "sm" | "md" | "lg";
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
-    return (
-      <button
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
-Button.displayName = "Button";
+export function EightBitButton({
+  children,
+  className,
+  variant = "primary",
+  size = "md",
+  disabled,
+  ...props
+}: EightBitButtonProps) {
+  const variantStyles = {
+    primary:
+      "bg-green-600 border-green-400 hover:bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]",
+    secondary:
+      "bg-gray-700 border-gray-500 hover:bg-gray-600 text-gray-200 shadow-[0_0_10px_rgba(100,116,139,0.4)]",
+    success:
+      "bg-emerald-600 border-emerald-400 hover:bg-emerald-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.5)]",
+    warning:
+      "bg-yellow-600 border-yellow-400 hover:bg-yellow-500 text-white shadow-[0_0_15px_rgba(234,179,8,0.5)]",
+    default:
+      "bg-green-600 border-green-400 hover:bg-green-500 text-white shadow-[0_0_15px_rgba(34,197,94,0.5)]",
+    outline:
+      "bg-transparent border-green-500 hover:bg-green-900/30 text-green-200 shadow-[0_0_10px_rgba(34,197,94,0.25)]",
+    destructive:
+      "bg-red-700 border-red-400 hover:bg-red-600 text-white shadow-[0_0_15px_rgba(239,68,68,0.45)]",
+  };
+  const sizeStyles = {
+    sm: "px-3 py-1.5 text-xs",
+    md: "px-6 py-3 text-sm",
+    lg: "px-7 py-3.5 text-sm",
+  };
 
-export { Button, buttonVariants };
+  return (
+    <button
+      className={cn(
+        "relative font-bold uppercase tracking-wider",
+        "border-4 transition-all duration-150",
+        "disabled:opacity-50 disabled:cursor-not-allowed disabled:shadow-none",
+        "active:translate-y-1 active:shadow-none",
+        variantStyles[variant],
+        sizeStyles[size],
+        className
+      )}
+      disabled={disabled}
+      {...props}
+    >
+      {children}
+    </button>
+  );
+}
+
+// Export as Button for backward compatibility
+export const Button = EightBitButton;

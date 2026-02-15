@@ -26,8 +26,10 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env*.local
 .env
+.env*.local
+.env.development
+.env.production
 
 # vercel
 .vercel
@@ -35,3 +37,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# MCP configuration (contains sensitive credentials)
+.mcp.json
+
+# Temporary credit data (should never be committed)
+/tmp/credit-data
+*.credit.json

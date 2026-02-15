@@ -9,43 +9,35 @@
     "progressionTiers": [
       {
         "tier": 1,
-        "name": "Novice Credit Builder",
-        "scoreRange": "300-579",
+        "name": "Sprout",
+        "scoreRange": "No score / 300-619",
         "level": "1-20",
         "theme": "Foundation & Learning",
         "description": "Starting your credit journey - learning the basics and establishing your first accounts"
       },
       {
         "tier": 2,
-        "name": "Apprentice Credit Manager",
-        "scoreRange": "580-669",
+        "name": "Guardian",
+        "scoreRange": "620-679",
         "level": "21-40",
         "theme": "Consistency & Growth",
         "description": "Building positive habits and expanding your credit profile responsibly"
       },
       {
         "tier": 3,
-        "name": "Skilled Credit Strategist",
-        "scoreRange": "670-739",
+        "name": "Warden",
+        "scoreRange": "680-749",
         "level": "41-60",
         "theme": "Optimization & Strategy",
         "description": "Optimizing your credit usage and strategically managing multiple accounts"
       },
       {
         "tier": 4,
-        "name": "Expert Credit Architect",
-        "scoreRange": "740-799",
+        "name": "Sentinel",
+        "scoreRange": "750-850",
         "level": "61-80",
         "theme": "Refinement & Excellence",
         "description": "Fine-tuning every aspect of your credit profile for maximum impact"
-      },
-      {
-        "tier": 5,
-        "name": "Master Credit Virtuoso",
-        "scoreRange": "800-850",
-        "level": "81-100",
-        "theme": "Perfection & Maintenance",
-        "description": "Achieving and maintaining elite credit status with perfect execution"
       }
     ],
 

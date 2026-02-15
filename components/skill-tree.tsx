@@ -9,6 +9,11 @@ import {
 } from "@/types/skill";
 import { SkillNode } from "./skill-node";
 import { Button } from "./ui/8bit-button";
+import { useGameState } from "@/lib/gameStateContext";
+import {
+  getMaxTierCapFromCreditScore,
+  getUniversalProgressState,
+} from "@/lib/universal-progression";
 
 interface SkillTreeProps {
   initialSkills: Skill[];
@@ -30,6 +35,13 @@ const NODE_HORIZONTAL_GAP = 210;
 const TIER_COLLISION_GAP = 150;
 const ROOT_GROUP_GAP = 190;
 
+const getPhaseNameForSkillTier = (tier: number): "Sprout" | "Guardian" | "Warden" | "Sentinel" => {
+  if (tier <= 2) return "Sprout";
+  if (tier === 3) return "Guardian";
+  if (tier === 4) return "Warden";
+  return "Sentinel";
+};
+
 interface NodePosition {
   x: number;
   y: number;
@@ -48,7 +60,50 @@ export function SkillTree({
   onSceneChange,
 }: SkillTreeProps) {
   const [skills, setSkills] = useState<Skill[]>(initialSkills);
+  const { gameState, isSynced } = useGameState();
   const [skillPoints, setSkillPoints] = useState(20);
+  const [maxTierCap, setMaxTierCap] = useState<number>(5);
+
+  // Apply synchronized credit data to Scene 1 using score-driven progression.
+  useEffect(() => {
+    if (!isSynced || !gameState) return;
+
+    const creditScore = gameState.metrics.creditScore;
+    const playerLevel = Math.max(1, Math.min(100, Math.round((creditScore - 300) / 5.5) + 1));
+    const bonusSkillPoints = Math.max(0, Math.floor(gameState.xp / 100));
+    const maxTierFromScore = getMaxTierCapFromCreditScore(creditScore);
+    setMaxTierCap(maxTierFromScore);
+
+    const unlocked = new Set<string>();
+
+    // Iteratively unlock skills when level threshold and prerequisites are satisfied.
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const skill of initialSkills) {
+        if (unlocked.has(skill.id)) continue;
+        if (skill.tier > maxTierFromScore) continue;
+        const meetsLevel = (skill.recommendedLevel ?? 1) <= playerLevel;
+        const prereqsMet = skill.prerequisites.every((id) => unlocked.has(id));
+        if (meetsLevel && prereqsMet) {
+          unlocked.add(skill.id);
+          changed = true;
+        }
+      }
+    }
+
+    const syncedSkills = initialSkills.map((s) => {
+      const isUnlocked = unlocked.has(s.id) && s.tier <= maxTierFromScore;
+      return {
+        ...s,
+        unlocked: isUnlocked,
+        currentLevel: isUnlocked ? 1 : 0,
+      };
+    });
+
+    setSkills(syncedSkills);
+    setSkillPoints(20 + bonusSkillPoints);
+  }, [isSynced, gameState, initialSkills]);
   const [linePaths, setLinePaths] = useState<
     Array<{ id: string; d: string; active: boolean; secondary: boolean }>
   >([]);
@@ -61,6 +116,10 @@ export function SkillTree({
   const viewportRef = useRef<HTMLDivElement | null>(null);
   const nodeRefs = useRef<Record<string, HTMLButtonElement | null>>({});
   const panStartRef = useRef({ x: 0, y: 0, offsetX: 0, offsetY: 0 });
+  const universalProgress = useMemo(
+    () => getUniversalProgressState(gameState?.metrics.creditScore ?? 0),
+    [gameState?.metrics.creditScore]
+  );
 
   // Notify parent of offset changes for parallax foreground
   useEffect(() => {
@@ -71,6 +130,7 @@ export function SkillTree({
 
   const canUnlockSkill = useCallback(
     (skill: Skill): boolean => {
+      if (isSynced && skill.tier > maxTierCap) return false;
       if (skill.unlocked) return true;
       if (skill.prerequisites.length === 0) return true;
 
@@ -79,7 +139,7 @@ export function SkillTree({
         return prereqSkill?.unlocked && prereqSkill.currentLevel > 0;
       });
     },
-    [skills]
+    [skills, isSynced, maxTierCap]
   );
 
   const handleUnlockSkill = useCallback(
@@ -89,6 +149,7 @@ export function SkillTree({
         if (skillIndex === -1) return prevSkills;
 
         const skill = prevSkills[skillIndex];
+        if (isSynced && skill.tier > maxTierCap) return prevSkills;
         if (skill.currentLevel >= skill.maxLevel) return prevSkills;
         if (skillPoints < skill.cost) return prevSkills;
         if (!skill.unlocked && !canUnlockSkill(skill)) return prevSkills;
@@ -104,7 +165,7 @@ export function SkillTree({
         return newSkills;
       });
     },
-    [skillPoints, canUnlockSkill]
+    [skillPoints, canUnlockSkill, isSynced, maxTierCap]
   );
 
   const handleReset = () => {
@@ -114,7 +175,8 @@ export function SkillTree({
       unlocked: skill.tier === 1,
     }));
     setSkills(resetSkills);
-    setSkillPoints(20);
+    // Refund all points invested in the current tree state.
+    setSkillPoints((prev) => prev + totalSpent);
     setZoom(1);
   };
 
@@ -122,7 +184,7 @@ export function SkillTree({
     nodeRefs.current[skillId] = node;
   }, []);
 
-  const { nodePositions, boardWidth, boardHeight, tierLabelY, primaryParentById } = useMemo(() => {
+  const { nodePositions, boardWidth, boardHeight, phaseLabelY, primaryParentById } = useMemo(() => {
     const skillsById = Object.fromEntries(skills.map((skill) => [skill.id, skill]));
     const primaryChildrenById: Record<string, string[]> = Object.fromEntries(
       skills.map((skill) => [skill.id, [] as string[]])
@@ -269,11 +331,24 @@ export function SkillTree({
       })
     ) as Record<number, number>;
 
+    const phaseBuckets: Record<string, number[]> = {};
+    Object.entries(tierLabelMap).forEach(([tierKey, y]) => {
+      const phase = getPhaseNameForSkillTier(Number(tierKey));
+      if (!phaseBuckets[phase]) phaseBuckets[phase] = [];
+      phaseBuckets[phase].push(y);
+    });
+    const phaseLabelMap = Object.fromEntries(
+      Object.entries(phaseBuckets).map(([phase, values]) => [
+        phase,
+        values.reduce((sum, current) => sum + current, 0) / values.length,
+      ])
+    ) as Record<string, number>;
+
     return {
       nodePositions: shiftedPositions,
       boardWidth: Math.max(1500, maxX - minX + padX * 2),
       boardHeight: Math.max(1100, maxY - minY + padY * 2 + 120),
-      tierLabelY: tierLabelMap,
+      phaseLabelY: phaseLabelMap,
       primaryParentById: primaryParentLookup,
     };
   }, [skills]);
@@ -426,6 +501,13 @@ export function SkillTree({
           <div className="mt-3 flex flex-wrap items-center justify-center gap-3 text-xs">
             <div className="bg-card border-2 border-primary px-3 py-2">SP {skillPoints}</div>
             <div className="bg-card border-2 border-secondary px-3 py-2">SPENT {totalSpent}</div>
+            {isSynced && gameState && (
+              <>
+                <div className="bg-card border-2 border-accent px-3 py-2">SYNCED SCORE {gameState.metrics.creditScore}</div>
+                <div className="bg-card border-2 border-primary px-3 py-2">{universalProgress.rank.rankName}</div>
+                <div className="bg-card border-2 border-warning px-3 py-2">TIER CAP {maxTierCap}</div>
+              </>
+            )}
             {targetScore && <div className="bg-card border-2 border-accent px-3 py-2">TARGET {targetScore}</div>}
             {maxLevel && <div className="bg-card border-2 border-primary px-3 py-2">MAX {maxLevel}</div>}
             <div className="bg-card border-2 border-border px-3 py-2">ZOOM {(zoom * 100).toFixed(0)}%</div>
@@ -445,11 +527,35 @@ export function SkillTree({
             </Button>
           </div>
 
+          {isSynced && gameState && (
+            <div className="mt-3 border-2 border-primary bg-card/80 px-3 py-2">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-[10px]">
+                <span>UNIVERSAL PROGRESS BAR</span>
+                <span>{universalProgress.totalProgressPercent.toFixed(0)}%</span>
+              </div>
+              <div className="mt-2 h-3 w-full border border-border bg-muted/70">
+                <div
+                  className="h-full bg-primary transition-all duration-300"
+                  style={{ width: `${universalProgress.totalProgressPercent}%` }}
+                />
+              </div>
+              <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-[9px] text-muted-foreground">
+                <span>
+                  PHASE {universalProgress.phaseName} | RANK {universalProgress.rank.rankName}
+                </span>
+                <span>
+                  {universalProgress.nextBandStartScore
+                    ? `NEXT BAND AT ${universalProgress.nextBandStartScore}`
+                    : "MAX BAND REACHED"}
+                </span>
+              </div>
+            </div>
+          )}
+
           {progressionTiers.length > 0 && (
-            <div className="mt-3 grid grid-cols-1 md:grid-cols-5 gap-2">
+            <div className="mt-3 grid grid-cols-1 md:grid-cols-4 gap-2">
               {progressionTiers.map((tier) => (
                 <div key={tier.tier} className="border-2 border-border bg-muted/60 p-2 text-center">
-                  <div className="text-[10px]">TIER {tier.tier}</div>
                   <div className="text-[11px] text-primary mt-1">{tier.name}</div>
                   <div className="text-[8px] text-muted-foreground mt-1">{tier.scoreRange} | Lv {tier.level}</div>
                 </div>
@@ -498,13 +604,13 @@ export function SkillTree({
               </svg>
 
               <div className="relative" style={{ zIndex: 1, width: boardWidth, height: boardHeight }}>
-                {Object.entries(tierLabelY).map(([tier, y]) => (
+                {Object.entries(phaseLabelY).map(([phase, y]) => (
                   <div
-                    key={tier}
+                    key={phase}
                     className="absolute left-6 bg-muted/80 border-2 border-border px-3 py-2 pixel-border"
                     style={{ top: y }}
                   >
-                    <div className="text-[10px] text-center text-muted-foreground">TIER {tier}</div>
+                    <div className="text-[10px] text-center text-muted-foreground">{phase.toUpperCase()}</div>
                   </div>
                 ))}
 

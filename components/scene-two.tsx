@@ -2,6 +2,8 @@
 
 import { Button } from "./ui/8bit-button";
 import { useEffect, useState, useRef } from "react";
+import { IdentityGateModal, PersonalInfo } from "./identity-gate-modal";
+import { useGameState } from "@/lib/gameStateContext";
 
 interface SceneTwoProps {
 }
@@ -21,7 +23,22 @@ export function SceneTwo({}: SceneTwoProps) {
   const [isTyping, setIsTyping] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   
-  const fullMessage = "Your financial choices ripple through the ecosystem. Every dollar you owe funds projects that either heal or harm our planet. By understanding where your money goes, you gain the power to redirect it toward a sustainable future.";
+  // Get game state context
+  const { gameState, setGameState, setNewUnlocks, setIsSynced, setGuideMessage } = useGameState();
+  
+  // AI Credit Orchestrator states
+  const [showIdentityModal, setShowIdentityModal] = useState(false);
+  const [isLoadingCredit, setIsLoadingCredit] = useState(false);
+  
+  // Use game state from context
+  const creditScore = gameState?.metrics.creditScore || null;
+  const forestHealth = gameState?.forestHealth || null;
+  const xp = gameState?.xp || 0;
+  const isCreditSynced = gameState !== null;
+  
+  const fullMessage = isCreditSynced && typedMessage 
+    ? typedMessage 
+    : "Your financial choices ripple through the ecosystem. Every dollar you owe funds projects that either heal or harm our planet. By understanding where your money goes, you gain the power to redirect it toward a sustainable future.";
   
   const banks: BankData[] = [
     { name: "Chase Bank", logo: "/icons/key_t1.png", debt: 15420, fossilFuelInvestment: 18.5 },
@@ -70,6 +87,71 @@ export function SceneTwo({}: SceneTwoProps) {
       setIsTyping(false);
     }
   }, [isTyping, typedMessage, fullMessage]);
+
+  // Handler for credit sync
+  const handleCreditSync = async (personalInfo: PersonalInfo) => {
+    setIsLoadingCredit(true);
+    
+    try {
+      const response = await fetch('/api/credit/sync', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: 'demo_user_' + Date.now(), // In production, use real user ID
+          bureau: 'experian',
+          personalInfo,
+          includeIdentityCheck: true,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.success && result.gameState && result.narrative) {
+        // Update game state in context (shared with Scene 1)
+        setGameState(result.gameState);
+        setIsSynced(true);
+        setGuideMessage(result.guideMessage || null);
+        
+        // Update new unlocks in context
+        if (result.newUnlocks && result.newUnlocks.length > 0) {
+          setNewUnlocks(result.newUnlocks);
+          console.log('🎉 New skills unlocked:', result.newUnlocks);
+        }
+
+        // Update AI Ranger message with live Gemini narrative
+        setTypedMessage("");
+        setIsTyping(true);
+        
+        // Start typing the new AI-generated message
+        setTimeout(() => {
+          const aiMessage = result.narrative.message;
+          let currentIndex = 0;
+          const typingInterval = setInterval(() => {
+            if (currentIndex < aiMessage.length) {
+              setTypedMessage(aiMessage.slice(0, currentIndex + 1));
+              currentIndex++;
+            } else {
+              clearInterval(typingInterval);
+              setIsTyping(false);
+            }
+          }, 30);
+        }, 500);
+
+        console.log('✅ Credit sync complete:', result);
+      } else {
+        console.error('❌ Credit sync failed:', result.error);
+        alert('Failed to sync credit data: ' + (result.error || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('❌ Credit sync error:', error);
+      alert('Network error. Please check your connection and backend status.');
+    } finally {
+      setIsLoadingCredit(false);
+      setShowIdentityModal(false);
+    }
+  };
 
   // Parallax effect on scroll
   useEffect(() => {
@@ -178,47 +260,88 @@ export function SceneTwo({}: SceneTwoProps) {
             {/* Scrollable Content Container */}
             <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4" style={{ scrollbarWidth: 'thin' }}>
               
-              {/* 2. CARBON IMPACT CARD (180px) */}
+              {/* 2. FOREST HEALTH / CREDIT SCORE CARD (180px) */}
               <div 
-                className="border-4 border-destructive bg-destructive/10 p-4 relative overflow-hidden pixel-border"
+                className={`border-4 ${isCreditSynced ? 'border-primary bg-primary/10' : 'border-destructive bg-destructive/10'} p-4 relative overflow-hidden pixel-border`}
                 style={{
                   minHeight: '180px',
                 }}
               >
                 <div className="absolute top-2 right-2 opacity-30">
-                  <img src="/icons/downgrade.png" alt="Impact warning" className="w-10 h-10 object-contain" />
+                  <img 
+                    src={isCreditSynced ? "/icons/leaf.png" : "/icons/downgrade.png"} 
+                    alt={isCreditSynced ? "Forest health" : "Impact warning"} 
+                    className="w-10 h-10 object-contain" 
+                  />
                 </div>
                 <div className="relative z-10">
-                  <div 
-                    className="text-3xl font-bold mb-2 text-destructive"
-                    style={{
-                      textShadow: '2px 2px 0 rgba(0,0,0,0.3)',
-                    }}
-                  >
-                    {carbonValue.toFixed(1)} TONS CO2/YEAR
-                  </div>
-                  <div 
-                    className="text-xs mb-4 text-foreground"
-                  >
-                    YOUR DEBT&apos;S CARBON FOOTPRINT
-                  </div>
-                  
-                  {/* Progress bar */}
-                  <div className="relative h-8 bg-card border-2 border-border overflow-hidden">
-                    <div 
-                      className="absolute inset-0 bg-destructive"
-                      style={{
-                        width: '82%',
-                        transition: 'width 2s ease-out',
-                      }}
-                    />
-                    <div 
-                      className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-foreground"
-                      style={{ textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}
-                    >
-                      82% ABOVE AVERAGE
-                    </div>
-                  </div>
+                  {isCreditSynced ? (
+                    <>
+                      <div 
+                        className="text-3xl font-bold mb-2 text-primary"
+                        style={{
+                          textShadow: '2px 2px 0 rgba(0,0,0,0.3)',
+                        }}
+                      >
+                        FOREST HEALTH: {forestHealth}/100
+                      </div>
+                      <div 
+                        className="text-xs mb-4 text-foreground"
+                      >
+                        CREDIT SCORE: {creditScore} | XP: {xp}
+                      </div>
+                      
+                      {/* Forest health progress bar */}
+                      <div className="relative h-8 bg-card border-2 border-border overflow-hidden">
+                        <div 
+                          className="absolute inset-0 bg-primary"
+                          style={{
+                            width: `${forestHealth}%`,
+                            transition: 'width 2s ease-out',
+                          }}
+                        />
+                        <div 
+                          className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-foreground"
+                          style={{ textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}
+                        >
+                          ✅ SYNCED WITH REAL CREDIT DATA
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div 
+                        className="text-3xl font-bold mb-2 text-destructive"
+                        style={{
+                          textShadow: '2px 2px 0 rgba(0,0,0,0.3)',
+                        }}
+                      >
+                        {carbonValue.toFixed(1)} TONS CO2/YEAR
+                      </div>
+                      <div 
+                        className="text-xs mb-4 text-foreground"
+                      >
+                        YOUR DEBT&apos;S CARBON FOOTPRINT
+                      </div>
+                      
+                      {/* Progress bar */}
+                      <div className="relative h-8 bg-card border-2 border-border overflow-hidden">
+                        <div 
+                          className="absolute inset-0 bg-destructive"
+                          style={{
+                            width: '82%',
+                            transition: 'width 2s ease-out',
+                          }}
+                        />
+                        <div 
+                          className="absolute inset-0 flex items-center justify-center text-[10px] font-bold text-foreground"
+                          style={{ textShadow: '1px 1px 0 rgba(0,0,0,0.5)' }}
+                        >
+                          82% ABOVE AVERAGE
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -333,24 +456,35 @@ export function SceneTwo({}: SceneTwoProps) {
               {/* 5. ACTION BUTTONS (120px) */}
               <div className="space-y-3" style={{ minHeight: '120px' }}>
                 <Button
-                  variant="default"
+                  variant="primary"
                   size="lg"
                   className="w-full"
+                  onClick={() => setShowIdentityModal(true)}
+                  disabled={isLoadingCredit}
                 >
                   <span className="inline-flex items-center gap-2">
-                    <img src="/ui_helper/UI_Flat_IconArrow01a.png" alt="Primary action" className="w-4 h-4 object-contain" />
-                    SHOW GREEN ALTERNATIVES
+                    {isCreditSynced ? (
+                      <>
+                        <img src="/ui_helper/UI_Flat_IconArrow01a.png" alt="Resync" className="w-4 h-4 object-contain" />
+                        🔄 RESYNC MY FOREST
+                      </>
+                    ) : (
+                      <>
+                        <img src="/icons/leaf.png" alt="Sync" className="w-4 h-4 object-contain" />
+                        🌿 SYNC MY FOREST (LIVE DATA)
+                      </>
+                    )}
                   </span>
                 </Button>
                 
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="lg"
                   className="w-full"
                 >
                   <span className="inline-flex items-center gap-2">
                     <img src="/ui_helper/UI_Flat_IconArrow01c.png" alt="Secondary action" className="w-4 h-4 object-contain" />
-                    EXPLAIN MY OPTIONS
+                    {isCreditSynced ? 'VIEW SKILL UNLOCKS' : 'EXPLAIN MY OPTIONS'}
                   </span>
                 </Button>
               </div>
@@ -420,6 +554,14 @@ export function SceneTwo({}: SceneTwoProps) {
           </div>
         </div>
       )}
+
+      {/* Identity Gate Modal */}
+      <IdentityGateModal
+        isOpen={showIdentityModal}
+        onClose={() => setShowIdentityModal(false)}
+        onVerify={handleCreditSync}
+        isVerifying={isLoadingCredit}
+      />
 
       <style jsx>{`
         @keyframes slideInLeft {

@@ -16,8 +16,7 @@ import {
 } from "./security";
 import { updateGameState } from "./gameStateEngine";
 import {
-  generateNarrative,
-  generateWelcomeNarrative,
+  generateSceneTwoEnvironmentalNarrative,
   generateSkillTreeGuideMessage,
 } from "./narrativeEngine";
 import type {
@@ -31,6 +30,15 @@ import type {
   BureauType,
 } from "./types";
 import { BUREAU_CONFIGS } from "./types";
+
+function isFlexIdProductUnavailable(error: any): boolean {
+  const codes = Array.isArray(error?.response?.data?.codes) ? error.response.data.codes : [];
+  const message = String(error?.response?.data?.messages?.[0] || error?.message || "");
+  return (
+    codes.includes("CRS102") ||
+    /required configuration for this product is not available/i.test(message)
+  );
+}
 
 // ------------------------------------------
 // CRS API CLIENT
@@ -95,7 +103,7 @@ class CRSApiClient {
         throw new Error("Login successful but no token received");
       }
 
-      this.authToken = token;
+      this.authToken = String(token).replace(/^Bearer\s+/i, "");
       this.tokenExpiry = Date.now() + (55 * 60 * 1000); // 55 minutes (assuming 60min expiry)
       
       console.log("✅ Login successful! Token obtained.");
@@ -141,7 +149,8 @@ class CRSApiClient {
     console.log(`📊 Pulling ${bureauConfig.name} credit report...`);
 
     try {
-      const response = await this.client.post(endpoint, request, {
+      const requestBody = this.buildCreditReportRequestBody(bureau, request);
+      const response = await this.client.post(endpoint, requestBody, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -155,20 +164,12 @@ class CRSApiClient {
         raw.requestId ||
         `req_${Date.now()}`;
 
-      // Parse response into standardized format
+      // Parse response into standardized format.
+      const parsed = this.parseCreditReportResponse(raw, bureau, sandboxFallback);
       const creditReport: CreditReportResponse = {
         requestId,
-        creditScore: {
-          score: raw.creditScore || raw.score || sandboxFallback.creditScore,
-          scoreModel: bureauConfig.scoreModel,
-          scoreFactors: raw.scoreFactors || [],
-        },
-        tradelines: raw.tradelines || [],
-        inquiries: raw.inquiries || this.syntheticInquiries(sandboxFallback.inquiryCount),
-        utilization: raw.utilization || this.calculateUtilization(raw) || sandboxFallback.utilization,
-        onTimePaymentPercent: raw.onTimePaymentPercent || sandboxFallback.onTimePaymentPercent,
-        totalAccounts: raw.totalAccounts || raw.tradelines?.length || sandboxFallback.totalAccounts,
-        openAccounts: raw.openAccounts || sandboxFallback.openAccounts,
+        ...parsed,
+        rawPayload: raw,
       };
 
       // Store temporarily (will be deleted after transformation)
@@ -240,6 +241,173 @@ class CRSApiClient {
     }
 
     return totalLimit > 0 ? (totalBalance / totalLimit) * 100 : 0;
+  }
+
+  private buildCreditReportRequestBody(bureau: BureauType, request: CreditRequest): Record<string, unknown> {
+    const normalizedRequestData = {
+      firstName: request.firstName,
+      middleName: request.middleName || "",
+      lastName: request.lastName,
+      suffix: request.suffix || "",
+      birthDate: request.birthDate,
+      ssn: request.ssn,
+      addresses: (request.addresses || []).map((address) => ({
+        borrowerResidencyType: address.borrowerResidencyType || "Current",
+        addressLine1: address.addressLine1,
+        addressLine2: address.addressLine2 || "",
+        city: address.city,
+        state: address.state,
+        postalCode: address.postalCode,
+      })),
+    };
+
+    // TransUnion prequal endpoint expects requestData envelope and repository flags.
+    if (bureau === "transunion") {
+      return {
+        requestData: normalizedRequestData,
+        repositoryIncluded: {
+          transunion: true,
+          experian: false,
+          equifax: false,
+        },
+      };
+    }
+
+    return normalizedRequestData;
+  }
+
+  private parseCreditReportResponse(
+    raw: any,
+    bureau: BureauType,
+    sandboxFallback: {
+      creditScore: number;
+      utilization: number;
+      onTimePaymentPercent: number;
+      inquiryCount: number;
+      totalAccounts: number;
+      openAccounts: number;
+    }
+  ): Omit<CreditReportResponse, "requestId"> {
+    const parsedTradelines = this.parseTradelines(raw);
+    const parsedInquiries = this.parseInquiries(raw);
+    const parsedScore = this.extractScore(raw);
+    const parsedUtilization = this.extractUtilization(raw, parsedTradelines);
+    const onTimePaymentPercent = this.deriveOnTimePaymentPercent(raw, parsedTradelines);
+    const totalAccounts = parsedTradelines.length || sandboxFallback.totalAccounts;
+    const openAccounts =
+      parsedTradelines.filter((tradeline: any) => String(tradeline.accountStatusType || "").toLowerCase() === "open")
+        .length || sandboxFallback.openAccounts;
+
+    return {
+      creditScore: {
+        score: parsedScore ?? sandboxFallback.creditScore,
+        scoreModel: BUREAU_CONFIGS[bureau].scoreModel,
+        scoreFactors: this.extractScoreFactors(raw),
+      },
+      tradelines: parsedTradelines.length > 0 ? parsedTradelines : (raw.tradelines || []),
+      inquiries: parsedInquiries.length > 0 ? parsedInquiries : this.syntheticInquiries(sandboxFallback.inquiryCount),
+      utilization: parsedUtilization ?? sandboxFallback.utilization,
+      onTimePaymentPercent: onTimePaymentPercent ?? sandboxFallback.onTimePaymentPercent,
+      totalAccounts,
+      openAccounts,
+    };
+  }
+
+  private parseTradelines(raw: any): any[] {
+    const tradelines = Array.isArray(raw?.tradelines) ? raw.tradelines : [];
+    return tradelines.map((tl: any) => ({
+      accountNumber: tl.accountIdentifier || tl.accountNumber,
+      accountType: tl.accountType || tl.loanType,
+      balance: this.toNumber(tl.currentBalanceAmount ?? tl.balance),
+      creditLimit: this.toNumber(tl.creditLimitAmount ?? tl.creditLimit),
+      paymentStatus: tl.currentRatingType || tl.paymentStatus,
+      monthsReviewed: this.toNumber(tl.monthsReviewedCount ?? tl.monthsReviewed),
+      dateOpened: tl.accountOpenedDate || tl.dateOpened,
+      accountStatusType: tl.accountStatusType,
+      _30DayLates: this.toNumber(tl._30DayLates),
+      _60DayLates: this.toNumber(tl._60DayLates),
+      _90DayLates: this.toNumber(tl._90DayLates),
+      monthlyPaymentAmount: this.toNumber(tl.monthlyPaymentAmount),
+      interestRatePercent: this.toNumber(tl.interestRatePercent),
+      creditorName: tl.creditorName,
+    }));
+  }
+
+  private parseInquiries(raw: any): Array<{ inquiryDate: string; inquiryType: string; subscriberName: string }> {
+    const inquiries = Array.isArray(raw?.inquiries) ? raw.inquiries : [];
+    return inquiries.map((inq: any) => ({
+      inquiryDate: inq.inquiryDate || inq.date || new Date().toISOString().slice(0, 10),
+      inquiryType: inq.inquiryType || "hard",
+      subscriberName: inq.subscriberName || inq.creditorName || "Unknown",
+    }));
+  }
+
+  private extractScore(raw: any): number | null {
+    if (typeof raw?.creditScore === "number") return raw.creditScore;
+    if (typeof raw?.score === "number") return raw.score;
+    if (Array.isArray(raw?.scores) && raw.scores.length > 0) {
+      const firstScore = raw.scores.find((s: any) => s?.scoreValue) || raw.scores[0];
+      const parsed = this.toNumber(firstScore?.scoreValue);
+      return parsed > 0 ? parsed : null;
+    }
+    return null;
+  }
+
+  private extractScoreFactors(raw: any): string[] {
+    if (Array.isArray(raw?.scoreFactors)) {
+      return raw.scoreFactors
+        .map((factor: any) => (typeof factor === "string" ? factor : factor?.scoreFactorText))
+        .filter(Boolean);
+    }
+
+    if (Array.isArray(raw?.scores) && raw.scores.length > 0) {
+      const firstScore = raw.scores.find((s: any) => Array.isArray(s?.scoreFactors)) || raw.scores[0];
+      return (firstScore?.scoreFactors || [])
+        .map((factor: any) => factor?.scoreFactorText || factor?.scoreFactorCode)
+        .filter(Boolean);
+    }
+
+    return [];
+  }
+
+  private extractUtilization(raw: any, parsedTradelines: any[]): number | null {
+    const direct = this.toNumber(raw?.utilization);
+    if (direct > 0) return direct;
+
+    const summaryUtil = this.toNumber(raw?.summaries?.tradeSummary?.revolvingCreditUtilization);
+    if (summaryUtil > 0) return summaryUtil;
+
+    const fromTradelines = this.calculateUtilization({ tradelines: parsedTradelines });
+    if (fromTradelines > 0) return fromTradelines;
+
+    return null;
+  }
+
+  private deriveOnTimePaymentPercent(raw: any, parsedTradelines: any[]): number | null {
+    const direct = this.toNumber(raw?.onTimePaymentPercent);
+    if (direct > 0) return direct;
+
+    if (parsedTradelines.length === 0) return null;
+
+    let totalLateCount = 0;
+    for (const tl of parsedTradelines) {
+      totalLateCount += this.toNumber((tl as any)._30DayLates);
+      totalLateCount += this.toNumber((tl as any)._60DayLates);
+      totalLateCount += this.toNumber((tl as any)._90DayLates);
+    }
+
+    if (totalLateCount === 0) return 99;
+    const penalty = Math.min(80, totalLateCount * 5);
+    return Math.max(10, 100 - penalty);
+  }
+
+  private toNumber(value: unknown): number {
+    if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+    if (typeof value === "string") {
+      const parsed = Number(value.replace(/[^0-9.-]/g, ""));
+      return Number.isFinite(parsed) ? parsed : 0;
+    }
+    return 0;
   }
 
   /**
@@ -330,9 +498,18 @@ export class CreditOrchestrator {
       // STEP 1: Identity Verification (if enabled)
       if (request.includeIdentityCheck && config.identity.requireIdentityCheck) {
         console.log("🔐 STEP 1: Identity Verification");
-        const identityResult = await this.crsClient.verifyIdentity(
-          request.personalInfo
-        );
+        let identityResult;
+        try {
+          identityResult = await this.crsClient.verifyIdentity(request.personalInfo);
+        } catch (error: any) {
+          // Some sandbox accounts do not have FlexID enabled (CRS102). Skip identity for demo flows.
+          if (isFlexIdProductUnavailable(error)) {
+            console.warn("⚠️ FlexID not configured for this account (CRS102). Continuing without identity check.");
+            identityResult = { verified: true, cviScore: 0, requestId: "flexid_skipped" };
+          } else {
+            throw error;
+          }
+        }
 
         if (!identityResult.verified) {
           return {
@@ -366,9 +543,11 @@ export class CreditOrchestrator {
 
       // STEP 4: Generate AI Narrative
       console.log("🤖 STEP 4: Generating AI Ranger narrative");
-      const narrative = previousState
-        ? await generateNarrative(gameState.metrics, previousState.metrics)
-        : await generateWelcomeNarrative(gameState.metrics);
+      const narrative = await generateSceneTwoEnvironmentalNarrative(
+        gameState.metrics,
+        creditReport,
+        previousState?.metrics || null
+      );
       const guideMessage = await generateSkillTreeGuideMessage(gameState.metrics);
 
       // STEP 5: Cleanup raw credit data

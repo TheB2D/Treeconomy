@@ -8,6 +8,7 @@
 // ------------------------------------------
 
 export interface CreditAddress {
+  borrowerResidencyType?: string;
   addressLine1: string;
   addressLine2?: string;
   city: string;
@@ -17,7 +18,9 @@ export interface CreditAddress {
 
 export interface CreditRequest {
   firstName: string;
+  middleName?: string;
   lastName: string;
+  suffix?: string;
   ssn: string;
   birthDate: string; // YYYY-MM-DD
   addresses: CreditAddress[];
@@ -54,6 +57,7 @@ export interface CreditReportResponse {
   onTimePaymentPercent?: number;
   totalAccounts?: number;
   openAccounts?: number;
+  rawPayload?: unknown;
 }
 
 // ------------------------------------------

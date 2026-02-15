@@ -1,12 +1,11 @@
 {
   "mcpServers": {
-    "crs-mcp-server": {
-      "command": "npx",
-      "args": ["@crscreditapi/mcp-server"],
-      "env": {
-        "CRS_USERNAME": "your-username",
-        "CRS_PASSWORD": "your-password"
-      }
+    "crs": {
+      "command": "bash",
+      "args": [
+        "-lc",
+        "set -a; source .env; set +a; npx @crscreditapi/mcp-server"
+      ]
     }
   }
 }

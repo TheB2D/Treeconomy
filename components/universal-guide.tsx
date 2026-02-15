@@ -141,8 +141,8 @@ export function UniversalGuide({ isOpen, message, gameState }: UniversalGuidePro
   if (!isOpen) return null;
 
   return (
-    <div className="fixed right-4 bottom-20 z-[1300] w-[min(460px,calc(100vw-20px))] pointer-events-auto">
-      <div className="relative bg-card/95 border-4 border-border pixel-border shadow-[6px_6px_0_rgba(0,0,0,0.45)] p-3 pr-24">
+    <div className="fixed right-4 bottom-20 z-[1300] w-[min(620px,calc(100vw-20px))] pointer-events-auto">
+      <div className="relative bg-card/95 border-4 border-border pixel-border shadow-[6px_6px_0_rgba(0,0,0,0.45)] p-3 pr-32">
         <div className="mb-2 inline-flex items-center border-2 border-primary bg-background px-2 py-1 text-[10px] text-primary">
           DOGE GUIDE
         </div>
@@ -199,12 +199,12 @@ export function UniversalGuide({ isOpen, message, gameState }: UniversalGuidePro
           </button>
         </div>
 
-        <div className="absolute right-2 bottom-2 w-20 flex flex-col items-center">
-          <div className="text-[9px] text-primary mb-1">DOGE</div>
+        <div className="absolute right-3 bottom-2 w-28 flex flex-col items-center">
+          <div className="text-[10px] text-primary mb-1">DOGE</div>
           <img
             src="/guide.gif"
             alt="Guide Doge"
-            className="w-16 h-16 object-contain"
+            className="w-24 h-24 object-contain"
             style={{ imageRendering: "pixelated" }}
           />
         </div>

@@ -3,9 +3,22 @@
 // Gemini-powered AI Ranger messaging system
 // ==========================================
 
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import axios from "axios";
+import {
+  FunctionCallingMode,
+  GoogleGenerativeAI,
+  SchemaType,
+  type Content,
+  type FunctionCall,
+  type Tool,
+} from "@google/generative-ai";
 import { config } from "./config";
-import type { NarrativeContext, NarrativeResponse, GameMetrics } from "./types";
+import type {
+  NarrativeContext,
+  NarrativeResponse,
+  GameMetrics,
+  CreditReportResponse,
+} from "./types";
 import { sanitizeForLogging } from "./security";
 
 // Initialize Gemini only when enabled to avoid accidental quota usage.
@@ -63,6 +76,366 @@ async function generateTextWithGemini(prompt: string): Promise<string> {
   }
 
   throw lastError ?? new Error("Gemini text generation failed.");
+}
+
+const DOGE_CRS_TRIGGER_REGEX =
+  /\b(crs|credit api|stitchcredit|openapi|schema|tool calling|logs|retention|request id|errors)\b/i;
+const CRS_STATUS_QUERY_REGEX =
+  /\b(crs stats?|check crs|crs status|is it ready|ready now|why too long|tool calling|tool call)\b/i;
+const CRS_BANKS_QUERY_REGEX =
+  /\b(what banks|which banks|banks connected|connected banks|linked banks|bank accounts)\b/i;
+const CRS_TIMEOUT_MS = 5000;
+const REQUEST_ID_REGEX =
+  /\b[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\b/i;
+
+let crsAuthToken: string | null = null;
+let crsAuthTokenExpiryMs = 0;
+
+function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error(`Timed out after ${timeoutMs}ms`)), timeoutMs);
+    promise
+      .then((value) => {
+        clearTimeout(timer);
+        resolve(value);
+      })
+      .catch((error) => {
+        clearTimeout(timer);
+        reject(error);
+      });
+  });
+}
+
+async function ensureCRSToken(): Promise<string> {
+  if (crsAuthToken && Date.now() < crsAuthTokenExpiryMs) {
+    return crsAuthToken;
+  }
+
+  if (!config.crs.username || !config.crs.password) {
+    throw new Error("CRS credentials missing on server.");
+  }
+
+  const response = await axios.post(
+    `${config.crs.baseUrl}/users/login`,
+    {
+      username: config.crs.username,
+      password: config.crs.password,
+    },
+    { timeout: config.crs.timeout }
+  );
+
+  const token =
+    response.data?.token ||
+    response.data?.accessToken ||
+    response.headers?.authorization ||
+    "";
+
+  if (!token) {
+    throw new Error("CRS login succeeded but no auth token was returned.");
+  }
+
+  crsAuthToken = String(token).replace(/^Bearer\s+/i, "");
+  crsAuthTokenExpiryMs = Date.now() + 50 * 60 * 1000;
+  return crsAuthToken;
+}
+
+async function callCRS(
+  method: "GET" | "POST",
+  path: string,
+  options?: { params?: Record<string, unknown>; body?: Record<string, unknown> }
+): Promise<unknown> {
+  const token = await ensureCRSToken();
+  const response = await axios.request({
+    method,
+    url: `${config.crs.baseUrl}${path}`,
+    params: options?.params,
+    data: options?.body,
+    timeout: config.crs.timeout,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+  });
+  return response.data;
+}
+
+const CRS_TOOLS: Tool[] = [
+  {
+    functionDeclarations: [
+      {
+        name: "crs_get_auth_status",
+        description: "Check if CRS credentials and auth token are available.",
+        parameters: {
+          type: SchemaType.OBJECT,
+          properties: {} as Record<string, any>,
+        },
+      },
+      {
+        name: "crs_get_logs",
+        description: "Get CRS request logs.",
+        parameters: {
+          type: SchemaType.OBJECT,
+          properties: {
+            page: { type: SchemaType.INTEGER, description: "Page number (0-indexed)." },
+            size: { type: SchemaType.INTEGER, description: "Page size." },
+          } as Record<string, any>,
+        },
+      },
+      {
+        name: "crs_get_errors",
+        description: "Get CRS error codes and descriptions.",
+        parameters: {
+          type: SchemaType.OBJECT,
+          properties: {} as Record<string, any>,
+        },
+      },
+      {
+        name: "crs_get_request_by_id",
+        description: "Get request retention details by request ID.",
+        parameters: {
+          type: SchemaType.OBJECT,
+          properties: {
+            requestId: { type: SchemaType.STRING, description: "CRS request UUID." },
+          } as Record<string, any>,
+          required: ["requestId"],
+        },
+      },
+    ],
+  },
+];
+
+async function executeCRSToolCall(toolCall: FunctionCall): Promise<Record<string, unknown>> {
+  try {
+    const args = (toolCall.args || {}) as Record<string, unknown>;
+    switch (toolCall.name) {
+      case "crs_get_auth_status": {
+        let tokenReady = false;
+        try {
+          await withTimeout(ensureCRSToken(), CRS_TIMEOUT_MS);
+          tokenReady = true;
+        } catch {
+          tokenReady = false;
+        }
+        return {
+          success: true,
+          environment: config.crs.environment,
+          baseUrl: config.crs.baseUrl,
+          credentialsConfigured: Boolean(config.crs.username && config.crs.password),
+          tokenReady,
+        };
+      }
+      case "crs_get_logs": {
+        const page = Number.isFinite(Number(args.page)) ? Number(args.page) : 0;
+        const size = Number.isFinite(Number(args.size)) ? Number(args.size) : 50;
+        const data = await withTimeout(
+          callCRS("GET", "/users/logs", { params: { page, size } }),
+          CRS_TIMEOUT_MS
+        );
+        return { success: true, page, size, data };
+      }
+      case "crs_get_errors": {
+        const data = await withTimeout(callCRS("GET", "/sys/errors"), CRS_TIMEOUT_MS);
+        return { success: true, data };
+      }
+      case "crs_get_request_by_id": {
+        const requestId =
+          typeof args.requestId === "string" && args.requestId.trim().length > 0
+            ? args.requestId.trim()
+            : "";
+        if (!requestId) {
+          return { success: false, error: "requestId is required." };
+        }
+        const data = await withTimeout(
+          callCRS("GET", `/users/retention/${encodeURIComponent(requestId)}`),
+          CRS_TIMEOUT_MS
+        );
+        return { success: true, requestId, data };
+      }
+      default:
+        return { success: false, error: `Unknown tool: ${toolCall.name}` };
+    }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error?.response?.data?.message || error?.message || "CRS tool execution failed.",
+    };
+  }
+}
+
+async function generateDogeChatWithCRSTools(
+  userMessage: string,
+  prompt: string,
+  history: DogeChatTurn[]
+): Promise<string> {
+  if (!config.gemini.enabled || !genAI) {
+    throw new Error("Gemini is not configured.");
+  }
+
+  const contents: Content[] = history
+    .slice(-8)
+    .map((turn) => ({
+      role: turn.role === "assistant" ? "model" : "user",
+      parts: [{ text: turn.content }],
+    }));
+  contents.push({ role: "user", parts: [{ text: prompt }] });
+
+  let lastError: unknown = null;
+  const lower = userMessage.toLowerCase();
+  const hasRequestId = REQUEST_ID_REGEX.test(userMessage);
+  const allowedFunctionNames = (() => {
+    if (
+      lower.includes("status") ||
+      lower.includes("ready") ||
+      lower.includes("tool call") ||
+      lower.includes("tool calling")
+    ) {
+      return ["crs_get_auth_status"];
+    }
+    if (lower.includes("errors")) {
+      return ["crs_get_errors"];
+    }
+    if (lower.includes("logs")) {
+      return ["crs_get_logs"];
+    }
+    if (
+      (lower.includes("request id") || lower.includes("retention") || lower.includes("debug")) &&
+      hasRequestId
+    ) {
+      return ["crs_get_request_by_id"];
+    }
+    // Safe default: auth status first.
+    return ["crs_get_auth_status"];
+  })();
+
+  for (const modelName of GEMINI_MODEL_CANDIDATES) {
+    try {
+      const model = genAI.getGenerativeModel({ model: modelName });
+      const running = [...contents];
+
+      for (let i = 0; i < 3; i++) {
+        const result = await model.generateContent({
+          contents: running,
+          tools: CRS_TOOLS,
+          toolConfig: {
+            functionCallingConfig: {
+              mode: FunctionCallingMode.AUTO,
+              allowedFunctionNames,
+            },
+          },
+        });
+        const response = await result.response;
+        const calls = response.functionCalls() ?? [];
+        if (calls.length === 0) {
+          const text = response.text().trim();
+          if (text) return text;
+          throw new Error(`Gemini model '${modelName}' returned empty text.`);
+        }
+
+        const modelContent = response.candidates?.[0]?.content;
+        if (modelContent) running.push(modelContent);
+
+        for (const call of calls) {
+          const toolResult = await executeCRSToolCall(call);
+          running.push({
+            role: "function",
+            parts: [
+              {
+                functionResponse: {
+                  name: call.name,
+                  response: toolResult,
+                },
+              },
+            ],
+          });
+        }
+      }
+
+      throw new Error("Exceeded tool-calling rounds.");
+    } catch (error) {
+      lastError = error;
+      if (!shouldTryNextModel(error)) break;
+    }
+  }
+
+  throw lastError ?? new Error("Gemini CRS tool chat failed.");
+}
+
+async function getCRSStatusReply(): Promise<string> {
+  const credentialsConfigured = Boolean(config.crs.username && config.crs.password);
+  if (!credentialsConfigured) {
+    return "CRS is not ready: server credentials are missing.";
+  }
+  try {
+    await withTimeout(ensureCRSToken(), CRS_TIMEOUT_MS);
+    return `CRS is ready. Environment: ${config.crs.environment}. API auth is working.`;
+  } catch (error: any) {
+    return `CRS is not ready right now. ${error?.message || "Auth check failed."}`;
+  }
+}
+
+function collectStringsDeep(value: unknown, out: string[] = []): string[] {
+  if (typeof value === "string") {
+    out.push(value);
+    return out;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectStringsDeep(item, out);
+    return out;
+  }
+  if (value && typeof value === "object") {
+    for (const v of Object.values(value as Record<string, unknown>)) {
+      collectStringsDeep(v, out);
+    }
+  }
+  return out;
+}
+
+function extractBankNamesFromLogs(logsPayload: unknown): string[] {
+  const results = new Set<string>();
+  const textPool = collectStringsDeep(logsPayload)
+    .map((s) => s.trim())
+    .filter(Boolean);
+
+  const bankPatterns = [
+    /\b(chase|jpmorgan)\b/i,
+    /\b(wells\s*fargo)\b/i,
+    /\b(capital\s*one)\b/i,
+    /\b(bank\s*of\s*america|bofa)\b/i,
+    /\b(citi|citibank)\b/i,
+    /\b(american\s*express|amex)\b/i,
+    /\b(discover)\b/i,
+    /\b(ally)\b/i,
+    /\b(pnc)\b/i,
+    /\b(us\s*bank)\b/i,
+    /\b(synchrony)\b/i,
+  ];
+
+  for (const text of textPool) {
+    for (const pattern of bankPatterns) {
+      const match = text.match(pattern);
+      if (match) {
+        results.add(match[0].replace(/\s+/g, " ").trim());
+      }
+    }
+  }
+
+  return Array.from(results).slice(0, 6);
+}
+
+async function getCRSBanksReply(): Promise<string> {
+  try {
+    const logs = await withTimeout(
+      callCRS("GET", "/users/logs", { params: { page: 0, size: 100 } }),
+      CRS_TIMEOUT_MS
+    );
+    const banks = extractBankNamesFromLogs(logs);
+    if (banks.length === 0) {
+      return "I checked your CRS logs, but I could not find linked bank names in the available records yet.";
+    }
+    return `From your CRS records, I can currently identify: ${banks.join(", ")}.`;
+  } catch (error: any) {
+    return `I could not fetch your connected-bank context from CRS right now. ${error?.message || "Please retry."}`;
+  }
 }
 
 // ------------------------------------------
@@ -152,6 +525,40 @@ Generate an AI Ranger message with appropriate tone: ${tone}`;
     return parsed;
   } catch (error) {
     console.error("❌ Narrative generation failed:", error);
+    return getFallbackNarrative(metrics);
+  }
+}
+
+export async function generateSceneTwoEnvironmentalNarrative(
+  metrics: GameMetrics,
+  report: CreditReportResponse,
+  previousMetrics?: GameMetrics | null
+): Promise<NarrativeResponse> {
+  const tone = detectTone(metrics, previousMetrics);
+  const context = buildNarrativeContext(metrics, previousMetrics);
+  const environmentalContext = buildEnvironmentalMoneyContext(report);
+
+  const prompt = `${RANGER_SYSTEM_PROMPT}
+
+## SCENE TWO OBJECTIVE
+Connect the player's debt, balances, and borrowing behavior to environmental impact.
+Use clear finance-to-planet links (interest drag, debt load, spending pressure, and greener financial habits).
+
+## FOREST STATE
+${context}
+
+## FINANCIAL FOOTPRINT CONTEXT
+${environmentalContext}
+
+Respond with:
+1) 2-3 vivid sentences on how current money/debt patterns can affect environmental outcomes
+2) "Ranger's Advice:" with 1-2 concrete actions that improve both financial health and eco-impact.
+Keep language player-friendly, never expose PII.`;
+
+  try {
+    const text = await generateTextWithGemini(prompt);
+    return parseNarrativeResponse(text, tone);
+  } catch (error) {
     return getFallbackNarrative(metrics);
   }
 }
@@ -277,6 +684,43 @@ function getUtilizationLevel(util: number): string {
   if (util <= 50) return "Moderate (30-50%)";
   if (util <= 70) return "High (50-70%)";
   return "Critical (>70%)";
+}
+
+function buildEnvironmentalMoneyContext(report: CreditReportResponse): string {
+  const tradelines = Array.isArray(report.tradelines) ? report.tradelines : [];
+  const inquiries = Array.isArray(report.inquiries) ? report.inquiries : [];
+  const scoreFactors = report.creditScore?.scoreFactors || [];
+
+  const revolvingLines = tradelines.filter((line) =>
+    String(line.accountType || "").toLowerCase().includes("revolving")
+  );
+  const installmentLines = tradelines.filter((line) =>
+    String(line.accountType || "").toLowerCase().includes("installment")
+  );
+
+  const totalBalance = tradelines.reduce((sum, line) => {
+    const balance = typeof line.balance === "number" ? line.balance : 0;
+    return sum + Math.max(0, balance);
+  }, 0);
+  const totalLimits = tradelines.reduce((sum, line) => {
+    const limit = typeof line.creditLimit === "number" ? line.creditLimit : 0;
+    return sum + Math.max(0, limit);
+  }, 0);
+  const utilizationEstimate =
+    report.utilization && report.utilization > 0
+      ? report.utilization
+      : totalLimits > 0
+      ? (totalBalance / totalLimits) * 100
+      : 0;
+
+  return [
+    `Estimated total balance: ${Math.round(totalBalance)}`,
+    `Estimated revolving utilization: ${utilizationEstimate.toFixed(1)}%`,
+    `Revolving lines: ${revolvingLines.length}`,
+    `Installment lines: ${installmentLines.length}`,
+    `Recent inquiries: ${inquiries.length}`,
+    `Top score factors: ${scoreFactors.slice(0, 3).join(" | ") || "Not provided"}`,
+  ].join("\n");
 }
 
 /**
@@ -511,11 +955,28 @@ export async function generateDogeChatResponse(
     .slice(-8)
     .map((turn) => `${turn.role === "user" ? "Player" : "Doge"}: ${turn.content}`)
     .join("\n");
+  const useCrsTools = DOGE_CRS_TRIGGER_REGEX.test(trimmedMessage);
+  if (useCrsTools && CRS_STATUS_QUERY_REGEX.test(trimmedMessage)) {
+    return getCRSStatusReply();
+  }
+  if (useCrsTools && CRS_BANKS_QUERY_REGEX.test(trimmedMessage)) {
+    return getCRSBanksReply();
+  }
+  if (
+    useCrsTools &&
+    /\b(request id|retention|debug)\b/i.test(trimmedMessage) &&
+    !REQUEST_ID_REGEX.test(trimmedMessage)
+  ) {
+    return "I can fetch retention details once you share a real RequestID UUID from a prior CRS response header.";
+  }
 
   const prompt = `You are Doge, the in-game Treeconomy guide.
-Style: short, direct, supportive, game-like.
-Output: 2-4 sentences max. Give at least one concrete next action when relevant.
+Style: concise, practical, friendly.
+Output: 1-3 short sentences. Be direct and specific.
 Never reveal sensitive personal data.
+Never narrate internal steps (no "I will check", "I'm checking", or "stay tuned").
+If the user asks CRS/API questions and tools are available, use them and answer with concrete results.
+Never suggest increasing utilization. Lower utilization is better.
 
 Current metrics:
 - Score: ${metrics.creditScore}
@@ -532,7 +993,9 @@ ${trimmedMessage}
 Reply as Doge with unique, contextual guidance.`;
 
   try {
-    const text = await generateTextWithGemini(prompt);
+    const text = useCrsTools
+      ? await generateDogeChatWithCRSTools(trimmedMessage, prompt, conversationHistory)
+      : await generateTextWithGemini(prompt);
     if (text.length > 0) return text;
     throw new Error("Gemini returned an empty response.");
   } catch (error) {

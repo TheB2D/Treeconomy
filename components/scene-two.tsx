@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "./ui/8bit-button";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { IdentityGateModal, PersonalInfo } from "./identity-gate-modal";
 import { useGameState } from "@/lib/gameStateContext";
 
@@ -15,16 +15,20 @@ interface BankData {
   fossilFuelInvestment: number;
 }
 
+const DEFAULT_RANGER_MESSAGE =
+  "Your financial choices ripple through the ecosystem. Every dollar you owe funds projects that either heal or harm our planet. By understanding where your money goes, you gain the power to redirect it toward a sustainable future.";
+
 export function SceneTwo({}: SceneTwoProps) {
   const [fadeIn, setFadeIn] = useState(false);
   const [showUI, setShowUI] = useState(false);
   const [carbonValue, setCarbonValue] = useState(0);
   const [typedMessage, setTypedMessage] = useState("");
+  const [messageToType, setMessageToType] = useState(DEFAULT_RANGER_MESSAGE);
   const [isTyping, setIsTyping] = useState(false);
   const [scrollY, setScrollY] = useState(0);
   
   // Get game state context
-  const { gameState, setGameState, setNewUnlocks, setIsSynced, setGuideMessage } = useGameState();
+  const { gameState, setGameState, setNewUnlocks, setIsSynced, guideMessage, setGuideMessage } = useGameState();
   
   // AI Credit Orchestrator states
   const [showIdentityModal, setShowIdentityModal] = useState(false);
@@ -35,10 +39,6 @@ export function SceneTwo({}: SceneTwoProps) {
   const forestHealth = gameState?.forestHealth || null;
   const xp = gameState?.xp || 0;
   const isCreditSynced = gameState !== null;
-  
-  const fullMessage = isCreditSynced && typedMessage 
-    ? typedMessage 
-    : "Your financial choices ripple through the ecosystem. Every dollar you owe funds projects that either heal or harm our planet. By understanding where your money goes, you gain the power to redirect it toward a sustainable future.";
   
   const banks: BankData[] = [
     { name: "Chase Bank", logo: "/icons/key_t1.png", debt: 15420, fossilFuelInvestment: 18.5 },
@@ -65,8 +65,11 @@ export function SceneTwo({}: SceneTwoProps) {
         if (current >= targetValue) {
           setCarbonValue(targetValue);
           clearInterval(timer);
-          // Start typing message after counter finishes
-          setIsTyping(true);
+          // Start default typing only when no synced message is available yet.
+          if (!isCreditSynced && typedMessage.length === 0) {
+            setMessageToType(DEFAULT_RANGER_MESSAGE);
+            setIsTyping(true);
+          }
         } else {
           setCarbonValue(current);
         }
@@ -74,19 +77,27 @@ export function SceneTwo({}: SceneTwoProps) {
       
       return () => clearInterval(timer);
     }
-  }, [showUI]);
+  }, [showUI, isCreditSynced, typedMessage.length]);
+
+  // If user already synced before entering Scene 2, hydrate this panel from context.
+  useEffect(() => {
+    if (!showUI || !isCreditSynced || !guideMessage) return;
+    setTypedMessage("");
+    setMessageToType(guideMessage);
+    setIsTyping(true);
+  }, [showUI, isCreditSynced, guideMessage]);
 
   // Typing animation
   useEffect(() => {
-    if (isTyping && typedMessage.length < fullMessage.length) {
+    if (isTyping && typedMessage.length < messageToType.length) {
       const timer = setTimeout(() => {
-        setTypedMessage(fullMessage.slice(0, typedMessage.length + 1));
+        setTypedMessage(messageToType.slice(0, typedMessage.length + 1));
       }, 30);
       return () => clearTimeout(timer);
-    } else if (typedMessage.length === fullMessage.length) {
+    } else if (typedMessage.length === messageToType.length) {
       setIsTyping(false);
     }
-  }, [isTyping, typedMessage, fullMessage]);
+  }, [isTyping, typedMessage, messageToType]);
 
   // Handler for credit sync
   const handleCreditSync = async (personalInfo: PersonalInfo) => {
@@ -100,9 +111,9 @@ export function SceneTwo({}: SceneTwoProps) {
         },
         body: JSON.stringify({
           userId: 'demo_user_' + Date.now(), // In production, use real user ID
-          bureau: 'experian',
+          bureau: 'transunion',
           personalInfo,
-          includeIdentityCheck: true,
+          includeIdentityCheck: false,
         }),
       });
 
@@ -112,7 +123,8 @@ export function SceneTwo({}: SceneTwoProps) {
         // Update game state in context (shared with Scene 1)
         setGameState(result.gameState);
         setIsSynced(true);
-        setGuideMessage(result.guideMessage || null);
+        const aiMessage = result.narrative?.message || result.guideMessage || DEFAULT_RANGER_MESSAGE;
+        setGuideMessage(aiMessage);
         
         // Update new unlocks in context
         if (result.newUnlocks && result.newUnlocks.length > 0) {
@@ -120,24 +132,10 @@ export function SceneTwo({}: SceneTwoProps) {
           console.log('🎉 New skills unlocked:', result.newUnlocks);
         }
 
-        // Update AI Ranger message with live Gemini narrative
+        // Update AI Ranger message with live narrative
         setTypedMessage("");
+        setMessageToType(aiMessage);
         setIsTyping(true);
-        
-        // Start typing the new AI-generated message
-        setTimeout(() => {
-          const aiMessage = result.narrative.message;
-          let currentIndex = 0;
-          const typingInterval = setInterval(() => {
-            if (currentIndex < aiMessage.length) {
-              setTypedMessage(aiMessage.slice(0, currentIndex + 1));
-              currentIndex++;
-            } else {
-              clearInterval(typingInterval);
-              setIsTyping(false);
-            }
-          }, 30);
-        }, 500);
 
         console.log('✅ Credit sync complete:', result);
       } else {

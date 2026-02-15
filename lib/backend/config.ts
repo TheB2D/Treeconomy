@@ -8,7 +8,7 @@ export const config = {
   gemini: {
     enabled: true, // Flip to true when you want Gemini features back on
     apiKey: process.env.GOOGLE_GENERATIVE_AI_API_KEY || "",
-    model: "gemini-1.5-flash", // Stable default model for v1beta generateContent
+    model: "gemini-2.0-flash-lite", // Stable default model for v1beta generateContent
     maxTokens: 2048,
     temperature: 0.7,
   },

@@ -139,12 +139,12 @@ export default function Home() {
   }, [currentScene]);
 
   useEffect(() => {
-    const daisies = new Audio("/music/Daisies By Justin Bieber.mp3");
+    const daisies = new Audio("/music/Daisies%20By%20Justin%20Bieber.mp3");
     daisies.loop = true;
     daisies.preload = "auto";
     daisies.volume = 0;
 
-    const juna = new Audio("/music/Juna by Clairo.mp3");
+    const juna = new Audio("/music/Juna%20by%20Clairo.mp3");
     juna.loop = true;
     juna.preload = "auto";
     juna.volume = 0;
@@ -192,7 +192,15 @@ export default function Home() {
 
   useEffect(() => {
     applyVolumes(trackLevelsRef.current.daisies, trackLevelsRef.current.juna);
-  }, [isMuted, applyVolumes]);
+    if (!isMuted) {
+      const targetTrack = getTargetTrack();
+      const activeTrack =
+        targetTrack === "daisies" ? daisiesAudioRef.current : junaAudioRef.current;
+      if (activeTrack?.paused) {
+        void activeTrack.play().catch(() => {});
+      }
+    }
+  }, [isMuted, applyVolumes, getTargetTrack]);
 
   const handleInitialSync = async (personalInfo: PersonalInfo) => {
     setEntrySyncLoading(true);
@@ -204,9 +212,9 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId: `demo_user_${Date.now()}`,
-          bureau: "experian",
+          bureau: "transunion",
           personalInfo,
-          includeIdentityCheck: true,
+          includeIdentityCheck: false,
         }),
       });
       const result = await response.json();
@@ -218,7 +226,7 @@ export default function Home() {
       setGameState(result.gameState);
       setNewUnlocks(result.newUnlocks || []);
       setIsSynced(true);
-      setGuideMessage(result.guideMessage || null);
+      setGuideMessage(result.narrative?.message || result.guideMessage || null);
       setCurrentScene(1);
       setHasEntered(true);
     } catch (error: any) {

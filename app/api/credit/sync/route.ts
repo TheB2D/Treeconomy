@@ -75,10 +75,8 @@ export async function POST(request: NextRequest) {
       userId,
       bureau,
       personalInfo,
-      includeIdentityCheck: false, // TEMPORARILY DISABLED FOR DEBUGGING 401 ERROR
+      includeIdentityCheck: Boolean(includeIdentityCheck),
     };
-
-    console.log("🔧 DEBUG: Identity check disabled, testing credit pull only...");
 
     const result = await orchestrator.orchestrateSync(orchestrationRequest);
 
